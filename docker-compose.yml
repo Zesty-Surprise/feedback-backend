@@ -3,8 +3,6 @@ services:
   mongo:
     image: mongo:latest
     container_name: mongo-zesty
-    env_file:
-      - ./.env
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: password123
