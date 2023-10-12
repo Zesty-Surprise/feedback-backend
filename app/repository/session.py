@@ -1,10 +1,9 @@
 from ..db.mongodb import AsyncIOMotorClient
-from ..models.sessions import FeedbackSession, FeedbackSessionCreate, FeedbackSessionUpdate
+from ..models.session import FeedbackSession, FeedbackSessionCreate, FeedbackSessionUpdate
 from ..core.config import database_name, session_collection_name
 
 from typing import List
 from bson import ObjectId
-from fastapi.encoders import jsonable_encoder
 
 async def db_get_sessions(db: AsyncIOMotorClient) -> List[FeedbackSession]:
     sessions : List[FeedbackSession] = []
@@ -14,7 +13,6 @@ async def db_get_sessions(db: AsyncIOMotorClient) -> List[FeedbackSession]:
     return sessions
 
 async def db_create_session(session: FeedbackSessionCreate, db):
-    session = jsonable_encoder(session)
     new_session = await db[database_name][session_collection_name].insert_one(session)
     return await db[database_name][session_collection_name].find_one({"_id": new_session.inserted_id})
 

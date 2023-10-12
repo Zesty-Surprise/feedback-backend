@@ -3,7 +3,13 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 from app.core.objectID import PyObjectId
 
-class FeedbackSession(BaseModel):
+class SessionForm(BaseModel):
+    form_id: int
+    completed: bool
+    score: int | None = None
+    department: str | None = None
+
+class FeedbackSessionShort(BaseModel):
     id: PyObjectId = Field(alias="_id")
     title: str
     destination: str
@@ -14,11 +20,26 @@ class FeedbackSession(BaseModel):
         populate_by_name = True
         arbitrary_types_allowed=True
         json_encoders = {PyObjectId: str}
+
+class FeedbackSession(BaseModel):
+    id: PyObjectId = Field(alias="_id")
+    title: str
+    destination: str
+    enps: int
+    forms:List[SessionForm]
+
+    class Config:
+        from_attributes = True
+        populate_by_name = True
+        arbitrary_types_allowed=True
+        json_encoders = {PyObjectId: str}
         json_schema_extra = {
-            "example": {
-                "title": "Sample eNPS Survey",
+           "example": {
+                "title": "2Sample eNPS Survey",
                 "destination": "*@ys.com",
-                "enps": 0
+                "enps": 0,
+                "form_count":1,
+                "forms":[]
             }
         }
 
@@ -26,6 +47,8 @@ class FeedbackSessionCreate(BaseModel):
     title: str
     destination: str
     enps: int
+    form_count: int
+    forms:Optional[List[SessionForm]] = None
 
     class Config:
         from_attributes = True
@@ -33,9 +56,10 @@ class FeedbackSessionCreate(BaseModel):
         arbitrary_types_allowed=True
         json_schema_extra = {
             "example": {
-                "title": "Sample eNPS Survey",
+                "title": "2Sample eNPS Survey",
                 "destination": "*@ys.com",
-                "enps": 0
+                "enps": 0,
+                "form_count":1,
             }
         }
 
@@ -43,6 +67,7 @@ class FeedbackSessionUpdate(BaseModel):
     title: Optional[str] = None
     destination: Optional[str] = None
     enps: Optional[int] = None
+    forms:List[SessionForm] = None
     
     class Config:
         from_attributes = True
@@ -50,9 +75,11 @@ class FeedbackSessionUpdate(BaseModel):
         arbitrary_types_allowed=True
         json_schema_extra = {
             "example": {
-                "title": "Sample eNPS Survey",
+                "title": "2Sample eNPS Survey",
                 "destination": "*@ys.com",
-                "enps": 0
+                "enps": 0,
+                "form_count":1,
+                "forms":[]
             }
         }
 
