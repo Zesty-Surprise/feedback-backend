@@ -7,7 +7,6 @@ from ....repository.session import (
     db_update_session_by_id
 )
 from app.models.session import (
-    FeedbackSession, 
     FeedbackSessionCreate, 
     FeedbackSessionUpdate,
     SessionForm
@@ -19,9 +18,7 @@ async def cont_get_sessions(db: AsyncIOMotorClient):
     return sessions
 
 async def cont_create_session(session: FeedbackSessionCreate, db: AsyncIOMotorClient):
-    
     session = jsonable_encoder(session)
-    
     session["forms"] = []
     for i in range(1, session["form_count"]):
         new_form : SessionForm = {
@@ -31,7 +28,6 @@ async def cont_create_session(session: FeedbackSessionCreate, db: AsyncIOMotorCl
             "department":None
         }
         session["forms"].append(new_form)
-
     session = await db_create_session(session, db)
     return session
 

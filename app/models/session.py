@@ -35,11 +35,16 @@ class FeedbackSession(BaseModel):
         json_encoders = {PyObjectId: str}
         json_schema_extra = {
            "example": {
-                "title": "2Sample eNPS Survey",
+                "title": "Sample eNPS Survey",
                 "destination": "*@ys.com",
                 "enps": 0,
                 "form_count":1,
-                "forms":[]
+                "forms":[{
+                    "form_id" : 0,
+                    "completed":False,
+                    "score":0,
+                    "department":""
+                }]
             }
         }
 
@@ -56,10 +61,16 @@ class FeedbackSessionCreate(BaseModel):
         arbitrary_types_allowed=True
         json_schema_extra = {
             "example": {
-                "title": "2Sample eNPS Survey",
+                "title": "Sample eNPS Survey",
                 "destination": "*@ys.com",
                 "enps": 0,
                 "form_count":1,
+                "forms":[{
+                    "form_id" : 0,
+                    "completed":False,
+                    "score":0,
+                    "department":""
+                }]
             }
         }
 
@@ -75,11 +86,16 @@ class FeedbackSessionUpdate(BaseModel):
         arbitrary_types_allowed=True
         json_schema_extra = {
             "example": {
-                "title": "2Sample eNPS Survey",
+                "title": "Sample eNPS Survey",
                 "destination": "*@ys.com",
                 "enps": 0,
                 "form_count":1,
-                "forms":[]
+                "forms":[{
+                    "form_id" : 0,
+                    "completed":False,
+                    "score":0,
+                    "department":""
+                }]
             }
         }
 

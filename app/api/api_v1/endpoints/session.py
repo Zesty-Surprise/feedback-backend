@@ -7,7 +7,7 @@ from ..controllers.session import (
     cont_get_session_by_id,
     cont_create_session,
     cont_update_session_by_id,
-    cont_delete_session_by_id
+    cont_delete_session_by_id,
 )
 
 from app.models.session import (
@@ -35,7 +35,7 @@ async def add_session(session: FeedbackSessionCreate, db: AsyncIOMotorClient = D
     session = await cont_create_session(session, db)    
     if session:
         return session
-    return HTTPException(404, f"session failed to create not")
+    return HTTPException(404, f"session failed to create")
 
 @router.put("/sessions/{id}", response_model=FeedbackSessionUpdate)
 async def update_session(id: str, request: FeedbackSessionUpdate, db: AsyncIOMotorClient = Depends(get_database)):
