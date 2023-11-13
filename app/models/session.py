@@ -6,8 +6,8 @@ from app.core.objectID import PyObjectId
 class SessionForm(BaseModel):
     form_id: int
     completed: bool
-    score: int | None = None
-    department: str | None = None
+    score: Optional[int] = None 
+    department: Optional[str] = None
 
 class FeedbackSessionShort(BaseModel):
     id: PyObjectId = Field(alias="_id")
