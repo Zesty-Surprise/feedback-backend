@@ -14,6 +14,7 @@ class FeedbackSessionShort(BaseModel):
     title: str
     destination: str
     enps: int
+    template: str
 
     class Config:
         from_attributes = True
@@ -26,6 +27,7 @@ class FeedbackSession(BaseModel):
     title: str
     destination: str
     enps: int
+    template: str
     forms:List[SessionForm]
 
     class Config:
@@ -38,6 +40,7 @@ class FeedbackSession(BaseModel):
                 "title": "Sample eNPS Survey",
                 "destination": "*@ys.com",
                 "enps": 0,
+                "template":"",
                 "form_count":1,
                 "forms":[{
                     "form_id" : 0,
@@ -53,6 +56,7 @@ class FeedbackSessionCreate(BaseModel):
     destination: str
     enps: int
     form_count: int
+    template: str
     forms:Optional[List[SessionForm]] = None
 
     class Config:
@@ -65,6 +69,7 @@ class FeedbackSessionCreate(BaseModel):
                 "destination": "*@ys.com",
                 "enps": 0,
                 "form_count":1,
+                "template":"",
                 "forms":[{
                     "form_id" : 0,
                     "completed":False,
@@ -78,6 +83,7 @@ class FeedbackSessionUpdate(BaseModel):
     title: Optional[str] = None
     destination: Optional[str] = None
     enps: Optional[int] = None
+    template: Optional[str] = None
     forms:List[SessionForm] = None
     
     class Config:
@@ -90,6 +96,7 @@ class FeedbackSessionUpdate(BaseModel):
                 "destination": "*@ys.com",
                 "enps": 0,
                 "form_count":1,
+                "template":"",
                 "forms":[{
                     "form_id" : 0,
                     "completed":False,

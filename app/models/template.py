@@ -17,7 +17,7 @@ class Template(BaseModel):
     id: PyObjectId = Field(alias="_id")
     name: str
     components:List[TemplateComponent]
-    html: str
+    # html: str
 
     class Config:
         from_attributes = True
@@ -54,15 +54,15 @@ class TemplateCreate(BaseModel):
                         "default_text":"Additional feedback?",
                         "custom_text":""
                     }
-                ],
-                "html":""
+                ]
+                # "html":""
             }
         }
 
 class TemplateUpdate(BaseModel):
     name: Optional[str] = None
     components:Optional[List[TemplateComponent]] = None
-    html: Optional[str] = None
+    # html: Optional[str] = None
     class Config:
         from_attributes = True
         populate_by_name = True
@@ -87,7 +87,7 @@ class TemplateUpdate(BaseModel):
                         "default_text":"Additional feedback?",
                         "custom_text":""
                     }
-                ],
-                "html":""
+                ]
+                # "html":""
             }
         }
