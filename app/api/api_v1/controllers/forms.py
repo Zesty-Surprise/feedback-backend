@@ -22,7 +22,6 @@ async def cont_get_forms_by_id(form_id:int, session_id:str, db:AsyncIOMotorClien
     return selected_form
 
 async def cont_update_forms_by_id(score: int, dep: str, form_id:int, session_id:str, db:AsyncIOMotorClient):
-    
     form = await cont_get_forms_by_id(form_id, session_id, db)
     if form["completed"]:
         return
