@@ -37,8 +37,7 @@ async def add_session(session: FeedbackSessionCreate, db: AsyncIOMotorClient = D
         return session
     return HTTPException(404, f"session failed to create")
 
-@router.put("/sessions/{id}")
-# @router.put("/sessions/{id}", response_model=FeedbackSessionUpdate)
+@router.put("/sessions/{id}", response_model=FeedbackSessionUpdate)
 async def update_session(id: str, request: FeedbackSessionUpdate, db: AsyncIOMotorClient = Depends(get_database)):
     update =  await cont_update_session_by_id(id, request, db)
     if update:
