@@ -7,6 +7,6 @@ from .endpoints.email import router as test_router
 
 router = APIRouter()
 router.include_router(session_router)
-router.include_router(form_router)
+# router.include_router(form_router)
 router.include_router(template_router)
 router.include_router(test_router)
