@@ -20,7 +20,7 @@ async def cont_get_sessions(db: AsyncIOMotorClient):
 async def cont_create_session(session: FeedbackSessionCreate, db: AsyncIOMotorClient):
     session = jsonable_encoder(session)
     session["forms"] = []
-    for i in range(1, session["form_count"]):
+    for i in range(0, session["form_count"]):
         new_form : SessionForm = {
             "form_id" : i,
             "completed":False,
