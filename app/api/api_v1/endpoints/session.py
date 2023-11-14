@@ -19,7 +19,7 @@ from app.models.session import (
 router = APIRouter(tags=["Sessions"])
 
 @router.get("/sessions")
-async def get_sessions(db: AsyncIOMotorClient = Depends(get_database)):
+async def get_all_sessions(db: AsyncIOMotorClient = Depends(get_database)):
     sessions = await cont_get_sessions(db)
     return sessions
 
