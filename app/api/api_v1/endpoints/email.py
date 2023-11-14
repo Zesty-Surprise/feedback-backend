@@ -23,6 +23,5 @@ async def get_submit_view(form_id:int, session_id:str,  db: AsyncIOMotorClient =
     
     url = str(form_id) + "?session_id=" + str(session_id)
     html = build_html(template['components'], url)
-    html = html.replace("'", "")
 
     return html

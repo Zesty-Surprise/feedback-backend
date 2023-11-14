@@ -27,7 +27,6 @@ head = '''
     </head>
     <body>
     <article class="wrapper" aria-label="placeholder aria label" lang="en">
-    <form action-xhr="http://localhost:8000/api/file/%a" method="get" id="ic-form">
     '''
 
 footer = '''
@@ -40,7 +39,7 @@ footer = '''
 
 enps = '''
     <div class="marginer">
-    <label class="element title"><strong>Fill in the score!</strong></label>
+    <label class="element title"><strong>{}</strong></label>
     <div class="score">
         <input class="input" type="radio" name="score" value="1" id="score-1">1</label>
         <input class="input" type="radio" name="score" value="2" id="score-2">2</label>
@@ -58,7 +57,7 @@ enps = '''
 
 department = '''
     <div class="marginer">
-    <label class="element dep"><strong>Select your department!</strong>
+    <label class="element dep"><strong>{}</strong>
       <input type="text" name="dep">
     </label>
     <br>
@@ -67,7 +66,7 @@ department = '''
 
 written = '''
     <div class="marginer">
-    <label class="element review"><strong>Additional feedback?</strong>
+    <label class="element review"><strong>{}</strong>
      <input type="text" name="more">
     </label>
     <br>
@@ -75,8 +74,10 @@ written = '''
 '''
 
 def build_html(components, url:str):
+    host = 'localhost:8000'
+    form_url = '<form action-xhr="http://{}/api/file/{}" method="get" id="ic-form">'.format(host, url)
     build = []
-    h = head % (url)
+    
     for comp in components:
         if comp['type'] == "enps-component":
             build.append(set_text_for_component(comp, enps))
@@ -85,7 +86,9 @@ def build_html(components, url:str):
         elif comp['type'] == "written-component":
             build.append(set_text_for_component(comp, written))
     build = "".join(build)
-    html = h + build + footer
+
+    html = head + form_url + build + footer
+
     return html
 
 def set_text_for_component(comp, text):

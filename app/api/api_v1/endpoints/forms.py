@@ -11,7 +11,7 @@ from ..controllers.forms import (
 router = APIRouter(tags=["Forms"])
 
 @router.get("/forms")
-async def get_forms_by_session(session_id:str, db: AsyncIOMotorClient = Depends(get_database)):
+async def get_all_forms_by_session(session_id:str, db: AsyncIOMotorClient = Depends(get_database)):
     forms = await cont_get_forms(session_id, db)
     return forms
 

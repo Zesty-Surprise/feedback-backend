@@ -19,13 +19,8 @@ from ....core.amp import build_html
 
 router = APIRouter(tags=["Template"])
 
-@router.get("/templates/html/{id}", response_class=HTMLResponse)
-async def get_template_html(id: str, db: AsyncIOMotorClient = Depends(get_database)):
-    template = await db_get_template_by_id(id, db)
-    return template['html']
-
 @router.get("/templates")
-async def get_templates(db: AsyncIOMotorClient = Depends(get_database)):
+async def get_all_templates(db: AsyncIOMotorClient = Depends(get_database)):
     templates = await db_get_templates(db)
     return templates
 
@@ -41,7 +36,6 @@ async def create_template(template: TemplateCreate, db: AsyncIOMotorClient = Dep
     
     # Controller
     template = jsonable_encoder(template)
-    template['html'] = build_html(template['components'])
     template = await db_create_template(template, db)
     #---
 
@@ -51,12 +45,10 @@ async def create_template(template: TemplateCreate, db: AsyncIOMotorClient = Dep
 
 @router.put("/templates/{id}")
 async def update_template(id: str, request: TemplateUpdate, db: AsyncIOMotorClient = Depends(get_database)):
-    
     # Controller
     request = {k: v for k, v in request.model_dump().items() if v is not None}
     update = await db_update_template_by_id(id, request, db)
     #---
-
     if update:
         return {"msg": f"updated template with id:{id}"}
     raise HTTPException(404, f"template {id} not found")
