@@ -28,7 +28,8 @@ async def cont_create_session(session: FeedbackSessionCreate, db: AsyncIOMotorCl
             "form_id" : i,
             "completed":False,
             "score":None,
-            "department":None
+            "department":None,
+            "date_completed":None
         }
         session["forms"].append(new_form)
     session = await db_create_session(session, db)

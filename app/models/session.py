@@ -12,7 +12,8 @@ class SessionForm(BaseModel):
     completed: bool
     score: Optional[int] = None 
     department: Optional[str] = None
-
+    date_completed: Optional[datetime] = None
+    
 class FeedbackSessionShort(BaseModel):
     id: PyObjectId = Field(alias="_id")
     title: str
