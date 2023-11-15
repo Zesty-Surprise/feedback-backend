@@ -24,9 +24,9 @@ async def get_all_sessions(db: AsyncIOMotorClient = Depends(get_database)):
     sessions = await cont_get_sessions(db)
     return sessions
 
-@router.get("/sessions/{id}", response_model=FeedbackSession)
-async def get_session(id: str, db: AsyncIOMotorClient = Depends(get_database)):
-    session = await cont_get_session_by_id(id, db)
+@router.get("/sessions/{id}")
+async def get_session(id: str, db: AsyncIOMotorClient = Depends(get_database), dep: str = None, short: bool = None):
+    session = await cont_get_session_by_id(id, db, dep, short)
     if session:
         return session
     raise HTTPException(404, f"sessions {id} not found")

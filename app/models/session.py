@@ -34,6 +34,22 @@ class FeedbackSessionShort(BaseModel):
         arbitrary_types_allowed=True
         json_encoders = {PyObjectId: str}
 
+class FeedbackSessionDatabase(BaseModel):
+    id: PyObjectId = Field(alias="_id")
+    title: str
+    date_created: Optional[datetime] = None
+    date_updated: Optional[datetime] = None
+    destination: str
+    template: str
+    form_count:int
+    forms:List[SessionForm]
+    
+    class Config:
+        from_attributes = True
+        populate_by_name = True
+        arbitrary_types_allowed=True
+        json_encoders = {PyObjectId: str}
+
 class FeedbackSession(BaseModel):
     id: PyObjectId = Field(alias="_id")
     title: str

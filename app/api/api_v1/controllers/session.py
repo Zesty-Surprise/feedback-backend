@@ -16,7 +16,7 @@ from app.models.session import (
 )
 from ....db.mongodb import AsyncIOMotorClient
 
-async def cont_get_sessions(db: AsyncIOMotorClient, short: bool = None):
+async def cont_get_sessions(db: AsyncIOMotorClient):
     sessions = await db_get_sessions(db)
     return sessions
 
@@ -35,10 +35,15 @@ async def cont_create_session(session: FeedbackSessionCreate, db: AsyncIOMotorCl
     session = await db_create_session(session, db)
     return session
 
-async def cont_get_session_by_id(id: str, db: AsyncIOMotorClient):
+async def cont_get_session_by_id(id: str, db: AsyncIOMotorClient, dep: str = None, short: bool = None):
     session = await db_get_session_by_id(id, db)
+    if dep:
+        session['forms'] = [form for form in session['forms'] if form['department'] == dep]
     session = FeedbackSession.model_validate(session)
-    return session
+    if short:
+        session = FeedbackSessionShort.model_validate(session)
+        return session
+    return session    
 
 async def cont_update_session_by_id(id: str, request: FeedbackSessionUpdate, db: AsyncIOMotorClient):
     update =  await db_update_session_by_id(id, request, db)

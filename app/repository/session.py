@@ -1,12 +1,12 @@
 from ..db.mongodb import AsyncIOMotorClient
-from ..models.session import FeedbackSession, FeedbackSessionCreate, FeedbackSessionUpdate
+from ..models.session import FeedbackSessionCreate, FeedbackSessionUpdate, FeedbackSessionDatabase, FeedbackSession
 from ..core.config import database_name, session_collection_name
 
 from typing import List
 from bson import ObjectId
 
-async def db_get_sessions(db: AsyncIOMotorClient) -> List[FeedbackSession]:
-    sessions : List[FeedbackSession] = []
+async def db_get_sessions(db: AsyncIOMotorClient) -> List[FeedbackSessionDatabase]:
+    sessions : List[FeedbackSessionDatabase] = []
     session_docs = db[database_name][session_collection_name].find()
     async for session in session_docs:
         sessions.append(FeedbackSession(**session))
@@ -16,8 +16,8 @@ async def db_create_session(session: FeedbackSessionCreate, db):
     new_session = await db[database_name][session_collection_name].insert_one(session)
     return await db[database_name][session_collection_name].find_one({"_id": new_session.inserted_id})
 
-async def db_get_session_by_id(id:str, db: AsyncIOMotorClient)->FeedbackSession:
-    session : FeedbackSession = await db[database_name][session_collection_name].find_one({"_id": ObjectId(id)})
+async def db_get_session_by_id(id:str, db: AsyncIOMotorClient)->FeedbackSessionDatabase:
+    session : FeedbackSessionDatabase = await db[database_name][session_collection_name].find_one({"_id": ObjectId(id)})
     return session
 
 async def db_update_session_by_id(id:str, req: FeedbackSessionUpdate, db:AsyncIOMotorClient):
