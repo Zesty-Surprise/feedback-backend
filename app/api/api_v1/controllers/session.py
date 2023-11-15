@@ -1,4 +1,5 @@
 from fastapi.encoders import jsonable_encoder
+from typing import List
 from ....repository.session import (
     db_get_session_by_id,
     db_get_sessions,
@@ -7,13 +8,15 @@ from ....repository.session import (
     db_update_session_by_id
 )
 from app.models.session import (
+    FeedbackSession,
+    FeedbackSessionShort,
     FeedbackSessionCreate, 
     FeedbackSessionUpdate,
     SessionForm
 )
 from ....db.mongodb import AsyncIOMotorClient
 
-async def cont_get_sessions(db: AsyncIOMotorClient):
+async def cont_get_sessions(db: AsyncIOMotorClient, short: bool = None):
     sessions = await db_get_sessions(db)
     return sessions
 
@@ -33,6 +36,7 @@ async def cont_create_session(session: FeedbackSessionCreate, db: AsyncIOMotorCl
 
 async def cont_get_session_by_id(id: str, db: AsyncIOMotorClient):
     session = await db_get_session_by_id(id, db)
+    session = FeedbackSession.model_validate(session)
     return session
 
 async def cont_update_session_by_id(id: str, request: FeedbackSessionUpdate, db: AsyncIOMotorClient):

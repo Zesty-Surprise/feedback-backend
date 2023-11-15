@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-
+from typing import List
 from ....db.mongodb import AsyncIOMotorClient, get_database
 
 from ..controllers.session import (
@@ -14,11 +14,12 @@ from app.models.session import (
     FeedbackSession, 
     FeedbackSessionCreate, 
     FeedbackSessionUpdate,
+    FeedbackSessionShort
 )
 
 router = APIRouter(tags=["Sessions"])
 
-@router.get("/sessions")
+@router.get("/sessions", response_model=List[FeedbackSessionShort])
 async def get_all_sessions(db: AsyncIOMotorClient = Depends(get_database)):
     sessions = await cont_get_sessions(db)
     return sessions
@@ -32,7 +33,7 @@ async def get_session(id: str, db: AsyncIOMotorClient = Depends(get_database)):
 
 @router.post("/sessions", response_model=FeedbackSessionCreate)
 async def add_session(session: FeedbackSessionCreate, db: AsyncIOMotorClient = Depends(get_database)):
-    session = await cont_create_session(session, db)    
+    session = await cont_create_session(session, db)  
     if session:
         return session
     return HTTPException(404, f"session failed to create")
