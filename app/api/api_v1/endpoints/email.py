@@ -18,4 +18,5 @@ async def get_submit_view(form_id:int, session_id:str,  db: AsyncIOMotorClient =
     template = await db_get_template_by_id(template_id, db)
     url = str(form_id) + "?session_id=" + str(session_id)
     html = build_html(template['components'], url)
+    
     return html

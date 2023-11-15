@@ -11,7 +11,6 @@ from ..controllers.session import (
 )
 
 from app.models.session import (
-    FeedbackSession, 
     FeedbackSessionCreate, 
     FeedbackSessionUpdate,
     FeedbackSessionShort
@@ -19,9 +18,9 @@ from app.models.session import (
 
 router = APIRouter(tags=["Sessions"])
 
-@router.get("/sessions", response_model=List[FeedbackSessionShort])
-async def get_all_sessions(db: AsyncIOMotorClient = Depends(get_database)):
-    sessions = await cont_get_sessions(db)
+@router.get("/sessions")
+async def get_all_sessions(db: AsyncIOMotorClient = Depends(get_database), dep: str = None, short: bool = None):
+    sessions = await cont_get_sessions(db, dep, short)
     return sessions
 
 @router.get("/sessions/{id}")

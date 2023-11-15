@@ -9,7 +9,7 @@ async def db_get_sessions(db: AsyncIOMotorClient) -> List[FeedbackSessionDatabas
     sessions : List[FeedbackSessionDatabase] = []
     session_docs = db[database_name][session_collection_name].find()
     async for session in session_docs:
-        sessions.append(FeedbackSession(**session))
+        sessions.append(FeedbackSessionDatabase(**session))
     return sessions
 
 async def db_create_session(session: FeedbackSessionCreate, db):

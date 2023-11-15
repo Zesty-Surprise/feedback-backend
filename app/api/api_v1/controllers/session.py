@@ -16,9 +16,28 @@ from app.models.session import (
 )
 from ....db.mongodb import AsyncIOMotorClient
 
-async def cont_get_sessions(db: AsyncIOMotorClient):
+async def cont_get_sessions(db: AsyncIOMotorClient, dep: str = None, short: bool = None):
+    
     sessions = await db_get_sessions(db)
-    return sessions
+    filtered_sessions = []
+    
+    for s in sessions:
+        if dep:
+            s.forms = [form for form in s.forms if form.department == dep]
+            configured = FeedbackSession.model_validate(s)
+            filtered_sessions.append(configured)
+        else:
+            configured = FeedbackSession.model_validate(s)
+            filtered_sessions.append(configured)
+    
+    if short:
+        filtered_sessions_short = []
+        for s in filtered_sessions:
+            short = FeedbackSessionShort.model_validate(s)
+            filtered_sessions_short.append(short)
+        return filtered_sessions_short
+    
+    return filtered_sessions    
 
 async def cont_create_session(session: FeedbackSessionCreate, db: AsyncIOMotorClient):
     session = jsonable_encoder(session)
