@@ -41,27 +41,38 @@ enps = '''
     <div class="marginer">
     <label class="element title"><strong>{}</strong></label>
     <div class="score">
-        <input class="input" type="radio" name="score" value="1" id="score-1">1</label>
-        <input class="input" type="radio" name="score" value="2" id="score-2">2</label>
-        <input class="input" type="radio" name="score" value="3" id="score-3">3</label>
-        <input class="input" type="radio" name="score" value="4" id="score-4">4</label>
-        <input class="input" type="radio" name="score" value="5" id="score-5">5</label>
-        <input class="input" type="radio" name="score" value="6" id="score-6">6</label>
-        <input class="input" type="radio" name="score" value="7" id="score-7">7</label>
-        <input class="input" type="radio" name="score" value="8" id="score-8">8</label>
-        <input class="input" type="radio" name="score" value="9" id="score-9">9</label>
-        <input class="input" type="radio" name="score" value="10" id="score-10">10</label>
+        <input class="input" type="radio" name="score" value="1" id="score-1"><label>1</label>
+        <input class="input" type="radio" name="score" value="2" id="score-2"><label>2</label>
+        <input class="input" type="radio" name="score" value="3" id="score-3"><label>3</label>
+        <input class="input" type="radio" name="score" value="4" id="score-4"><label>4</label>
+        <input class="input" type="radio" name="score" value="5" id="score-5"><label>5</label>
+        <input class="input" type="radio" name="score" value="6" id="score-6"><label>6</label>
+        <input class="input" type="radio" name="score" value="7" id="score-7"><label>7</label>
+        <input class="input" type="radio" name="score" value="8" id="score-8"><label>8</label>
+        <input class="input" type="radio" name="score" value="9" id="score-9"><label>9</label>
+        <input class="input" type="radio" name="score" value="10" id="score-10"><label>10</label>
     </div>
     </div>
 '''
 
+# 'Customer Service', 'E-commerce', 'Finance', 'Gifts', 'Innovation',
+#        'IT', 'People', 'Production', 'Purchase'
+
 department = '''
     <div class="marginer">
-    <label class="element dep"><strong>{}</strong>
-      <input type="text" name="dep">
-    </label>
-    <br>
-    </div>
+        <label class="element title"><strong>{}</strong></label>
+        <div class="score">
+            <input class="input" type="radio" name="dep" value="Customer Service"><label>Customer Service</label>
+            <input class="input" type="radio" name="dep" value="E-commerce"><label>E-commerce</label>
+            <input class="input" type="radio" name="dep" value="Finance"><label>Finance</label>
+            <input class="input" type="radio" name="dep" value="Gifts"><label>Gifts</label>
+            <input class="input" type="radio" name="dep" value="Innovation"><label>Innovation</label>
+            <input class="input" type="radio" name="dep" value="IT"><label>IT</label>
+            <input class="input" type="radio" name="dep" value="People"><label>People</label>
+            <input class="input" type="radio" name="dep" value="Production"><label>Production</label>
+            <input class="input" type="radio" name="dep" value="Purchase"><label>Purchase</label>
+        </div>
+    </div> 
 '''
 
 written = '''
