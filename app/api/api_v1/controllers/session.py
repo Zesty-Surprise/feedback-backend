@@ -1,4 +1,5 @@
 from fastapi.encoders import jsonable_encoder
+from typing import List
 from ....repository.session import (
     db_get_session_by_id,
     db_get_sessions,
@@ -7,15 +8,37 @@ from ....repository.session import (
     db_update_session_by_id
 )
 from app.models.session import (
+    FeedbackSession,
+    FeedbackSessionShort,
     FeedbackSessionCreate, 
     FeedbackSessionUpdate,
     SessionForm
 )
 from ....db.mongodb import AsyncIOMotorClient
 
-async def cont_get_sessions(db: AsyncIOMotorClient):
+async def cont_get_sessions(db: AsyncIOMotorClient, dep: str = None, short: bool = None):
+    
     sessions = await db_get_sessions(db)
-    return sessions
+    filtered_sessions = []
+    
+    for s in sessions:
+        
+        if dep:
+            s.forms = [form for form in s.forms if form.department == dep]
+            configured = FeedbackSession.model_validate(s)
+            filtered_sessions.append(configured)
+        else:
+            configured = FeedbackSession.model_validate(s)
+            filtered_sessions.append(configured)
+    
+    if short:
+        filtered_sessions_short = []
+        for s in filtered_sessions:
+            short = FeedbackSessionShort.model_validate(s)
+            filtered_sessions_short.append(short)
+        return filtered_sessions_short
+    
+    return filtered_sessions    
 
 async def cont_create_session(session: FeedbackSessionCreate, db: AsyncIOMotorClient):
     session = jsonable_encoder(session)
@@ -25,15 +48,24 @@ async def cont_create_session(session: FeedbackSessionCreate, db: AsyncIOMotorCl
             "form_id" : i,
             "completed":False,
             "score":None,
-            "department":None
+            "department":None,
+            "date_completed":None
         }
         session["forms"].append(new_form)
     session = await db_create_session(session, db)
     return session
 
-async def cont_get_session_by_id(id: str, db: AsyncIOMotorClient):
+async def cont_get_session_by_id(id: str, db: AsyncIOMotorClient, dep: str = None, short: bool = None):
     session = await db_get_session_by_id(id, db)
-    return session
+
+    if dep:
+        session['forms'] = [form for form in session['forms'] if form['department'] == dep]
+    session = FeedbackSession.model_validate(session)
+
+    if short:
+        session = FeedbackSessionShort.model_validate(session)
+        return session
+    return session    
 
 async def cont_update_session_by_id(id: str, request: FeedbackSessionUpdate, db: AsyncIOMotorClient):
     update =  await db_update_session_by_id(id, request, db)
