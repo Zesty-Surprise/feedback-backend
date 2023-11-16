@@ -13,6 +13,7 @@ from ..controllers.session import (
 from app.models.session import (
     FeedbackSessionCreate, 
     FeedbackSessionUpdate,
+    FeedbackSession,
     FeedbackSessionShort
 )
 

@@ -25,7 +25,7 @@ class FeedbackSessionShort(BaseModel):
     completed:int
     promoters:int
     passive:int
-    demotter:int
+    demoter:int
     score:float
     
     class Config:
@@ -91,7 +91,7 @@ class FeedbackSession(BaseModel):
     
     @computed_field(return_type=int)
     @cached_property
-    def demotter(self):
+    def demoter(self):
         count=0
         for form in self.forms:
             if form.completed:
@@ -104,7 +104,7 @@ class FeedbackSession(BaseModel):
     def score(self):
         score = 0.0
         if self.completed > 0:
-            score = ((self.promoters-self.demotter)/self.completed)*100
+            score = ((self.promoters-self.demoter)/self.completed)*100
         return score
         
     class Config:

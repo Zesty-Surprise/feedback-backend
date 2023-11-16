@@ -22,6 +22,7 @@ async def cont_get_sessions(db: AsyncIOMotorClient, dep: str = None, short: bool
     filtered_sessions = []
     
     for s in sessions:
+        
         if dep:
             s.forms = [form for form in s.forms if form.department == dep]
             configured = FeedbackSession.model_validate(s)
@@ -56,9 +57,11 @@ async def cont_create_session(session: FeedbackSessionCreate, db: AsyncIOMotorCl
 
 async def cont_get_session_by_id(id: str, db: AsyncIOMotorClient, dep: str = None, short: bool = None):
     session = await db_get_session_by_id(id, db)
+
     if dep:
         session['forms'] = [form for form in session['forms'] if form['department'] == dep]
     session = FeedbackSession.model_validate(session)
+
     if short:
         session = FeedbackSessionShort.model_validate(session)
         return session
