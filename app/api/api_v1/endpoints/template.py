@@ -3,7 +3,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import HTMLResponse
 from ....db.mongodb import AsyncIOMotorClient, get_database
-from ..controllers.auth import get_current_active_user
+from ..controllers.auth import get_current_user
 
 from ....repository.template import (
     db_get_templates,
@@ -25,7 +25,7 @@ router = APIRouter(tags=["Template"])
 
 @router.get("/templates")
 async def get_all_templates(    
-    current_user: Annotated[User, Depends(get_current_active_user)],
+    current_user: Annotated[User, Depends(get_current_user)],
     db: AsyncIOMotorClient = Depends(get_database)
 ):
     templates = await db_get_templates(db)
@@ -34,7 +34,7 @@ async def get_all_templates(
 @router.get("/templates/{id}", response_model=Template)
 async def get_template(
     id: str,
-    current_user: Annotated[User, Depends(get_current_active_user)],
+    current_user: Annotated[User, Depends(get_current_user)],
     db: AsyncIOMotorClient = Depends(get_database)
 ):
     template = await db_get_template_by_id(id, db)
@@ -45,7 +45,7 @@ async def get_template(
 @router.post("/templates", response_model=Template)
 async def create_template(
     template: TemplateCreate, 
-    current_user: Annotated[User, Depends(get_current_active_user)],
+    current_user: Annotated[User, Depends(get_current_user)],
     db: AsyncIOMotorClient = Depends(get_database)
 ):    
     # Controller
@@ -61,7 +61,7 @@ async def create_template(
 async def update_template(
     id: str,
     request: TemplateUpdate,
-    current_user: Annotated[User, Depends(get_current_active_user)],
+    current_user: Annotated[User, Depends(get_current_user)],
     db: AsyncIOMotorClient = Depends(get_database)
 ):
     # Controller
@@ -75,7 +75,7 @@ async def update_template(
 @router.delete("/templates/{id}")
 async def delete_template(
     id: str,
-    current_user: Annotated[User, Depends(get_current_active_user)],
+    current_user: Annotated[User, Depends(get_current_user)],
     db: AsyncIOMotorClient = Depends(get_database)
 ):
     delete = await db_delete_template_by_id(id, db)

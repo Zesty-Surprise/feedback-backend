@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
-from ..controllers.auth import get_current_active_user
+from ..controllers.auth import get_current_user
 
 from ....db.mongodb import AsyncIOMotorClient, get_database
 
@@ -32,7 +32,7 @@ async def complete_form(
     score: int, 
     dep: str, 
     form_id:int, 
-    current_user: Annotated[User, Depends(get_current_active_user)],
+    current_user: Annotated[User, Depends(get_current_user)],
     db: AsyncIOMotorClient = Depends(get_database)
 ):
     update = await cont_update_forms_by_id(score, dep, form_id, session_id, db)

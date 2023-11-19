@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List
 from ....db.mongodb import AsyncIOMotorClient, get_database
-from ..controllers.auth import get_current_active_user
+from ..controllers.auth import get_current_user
 
 from ..controllers.session import (
     cont_get_sessions,
@@ -25,7 +25,7 @@ router = APIRouter(tags=["Sessions"])
 
 @router.get("/sessions")
 async def get_all_sessions(
-    current_user: Annotated[User, Depends(get_current_active_user)],
+    current_user: Annotated[User, Depends(get_current_user)],
     db: AsyncIOMotorClient = Depends(get_database), 
     dep: str = None, 
     short: bool = None
@@ -36,7 +36,7 @@ async def get_all_sessions(
 @router.get("/sessions/{id}")
 async def get_session(
     id: str, 
-    current_user: Annotated[User, Depends(get_current_active_user)],
+    current_user: Annotated[User, Depends(get_current_user)],
     db: AsyncIOMotorClient = Depends(get_database), 
     dep: str = None, 
     short: bool = None
@@ -49,7 +49,7 @@ async def get_session(
 @router.post("/sessions", response_model=FeedbackSessionCreate)
 async def add_session(
     session: FeedbackSessionCreate, 
-    current_user: Annotated[User, Depends(get_current_active_user)],
+    current_user: Annotated[User, Depends(get_current_user)],
     db: AsyncIOMotorClient = Depends(get_database)
 ):
     session = await cont_create_session(session, db)  
@@ -61,7 +61,7 @@ async def add_session(
 async def update_session(
     id: str, 
     request: FeedbackSessionUpdate, 
-    current_user: Annotated[User, Depends(get_current_active_user)],
+    current_user: Annotated[User, Depends(get_current_user)],
     db: AsyncIOMotorClient = Depends(get_database)
 ):
     update =  await cont_update_session_by_id(id, request, db)
@@ -72,7 +72,7 @@ async def update_session(
 @router.delete("/sessions/{id}")
 async def delete_session(
     id: str, 
-    current_user: Annotated[User, Depends(get_current_active_user)],
+    current_user: Annotated[User, Depends(get_current_user)],
     db: AsyncIOMotorClient = Depends(get_database)
 ):
     delete = await cont_delete_session_by_id(id, db)

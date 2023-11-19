@@ -3,7 +3,7 @@ from typing import Annotated
 
 from fastapi.responses import HTMLResponse
 from ....db.mongodb import AsyncIOMotorClient, get_database
-from ..controllers.auth import get_current_active_user
+from ..controllers.auth import get_current_user
 
 from ..controllers.session import (
     cont_get_session_by_id
@@ -20,7 +20,7 @@ router = APIRouter(tags=["Email"])
 async def get_submit_view(
     form_id:int, 
     session_id:str,  
-    current_user: Annotated[User, Depends(get_current_active_user)],
+    current_user: Annotated[User, Depends(get_current_user)],
     db: AsyncIOMotorClient = Depends(get_database),
 ):
     session = await cont_get_session_by_id(session_id, db)

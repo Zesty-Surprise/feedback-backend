@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from ....core.config import access_token_expire_minutes
-from ..controllers.auth import authenticate_user, create_access_token, get_current_active_user
+from ..controllers.auth import authenticate_user, create_access_token, get_current_user
 
 from ....models.token import Token
 from ....models.user import User
@@ -41,13 +41,13 @@ async def login_for_access_token(
 
 @router.get("/users/me/", response_model=User)
 async def read_users_me(
-    current_user: Annotated[User, Depends(get_current_active_user)]
+    current_user: Annotated[User, Depends(get_current_user)]
 ):
     return current_user
 
 
 @router.get("/users/me/items/")
 async def read_own_items(
-    current_user: Annotated[User, Depends(get_current_active_user)]
+    current_user: Annotated[User, Depends(get_current_user)]
 ):
     return [{"item_id": "Foo", "owner": current_user.username}]
