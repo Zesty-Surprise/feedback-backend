@@ -1,6 +1,9 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List
 from ....db.mongodb import AsyncIOMotorClient, get_database
+from ..controllers.auth import get_current_active_user
 
 from ..controllers.session import (
     cont_get_sessions,
@@ -16,37 +19,62 @@ from app.models.session import (
     FeedbackSession,
     FeedbackSessionShort
 )
+from ....models.user import User
 
 router = APIRouter(tags=["Sessions"])
 
 @router.get("/sessions")
-async def get_all_sessions(db: AsyncIOMotorClient = Depends(get_database), dep: str = None, short: bool = None):
+async def get_all_sessions(
+    current_user: Annotated[User, Depends(get_current_active_user)],
+    db: AsyncIOMotorClient = Depends(get_database), 
+    dep: str = None, 
+    short: bool = None
+):
     sessions = await cont_get_sessions(db, dep, short)
     return sessions
 
 @router.get("/sessions/{id}")
-async def get_session(id: str, db: AsyncIOMotorClient = Depends(get_database), dep: str = None, short: bool = None):
+async def get_session(
+    id: str, 
+    current_user: Annotated[User, Depends(get_current_active_user)],
+    db: AsyncIOMotorClient = Depends(get_database), 
+    dep: str = None, 
+    short: bool = None
+):
     session = await cont_get_session_by_id(id, db, dep, short)
     if session:
         return session
     raise HTTPException(404, f"sessions {id} not found")
 
 @router.post("/sessions", response_model=FeedbackSessionCreate)
-async def add_session(session: FeedbackSessionCreate, db: AsyncIOMotorClient = Depends(get_database)):
+async def add_session(
+    session: FeedbackSessionCreate, 
+    current_user: Annotated[User, Depends(get_current_active_user)],
+    db: AsyncIOMotorClient = Depends(get_database)
+):
     session = await cont_create_session(session, db)  
     if session:
         return session
     return HTTPException(404, f"session failed to create")
 
 @router.put("/sessions/{id}", response_model=FeedbackSessionUpdate)
-async def update_session(id: str, request: FeedbackSessionUpdate, db: AsyncIOMotorClient = Depends(get_database)):
+async def update_session(
+    id: str, 
+    request: FeedbackSessionUpdate, 
+    current_user: Annotated[User, Depends(get_current_active_user)],
+    db: AsyncIOMotorClient = Depends(get_database)
+):
     update =  await cont_update_session_by_id(id, request, db)
     if update:
         return {"msg":f"updated session with id:{id}"}
     raise HTTPException(404, f"sessions {id} not found")
  
 @router.delete("/sessions/{id}")
-async def delete_session(id: str, db: AsyncIOMotorClient = Depends(get_database)):
+async def delete_session(
+    id: str, 
+    current_user: Annotated[User, Depends(get_current_active_user)],
+    db: AsyncIOMotorClient = Depends(get_database)
+):
     delete = await cont_delete_session_by_id(id, db)
     if delete:
         return {"msg":f"deleted session with id:{id}"}

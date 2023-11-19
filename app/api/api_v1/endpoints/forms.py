@@ -1,4 +1,6 @@
+from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
+from ..controllers.auth import get_current_active_user
 
 from ....db.mongodb import AsyncIOMotorClient, get_database
 
@@ -7,6 +9,8 @@ from ..controllers.forms import (
     cont_get_forms_by_id,
     cont_update_forms_by_id
 )
+
+from ....models.user import User
 
 router = APIRouter(tags=["Forms"])
 
@@ -23,7 +27,14 @@ router = APIRouter(tags=["Forms"])
 #     return form
 
 @router.get("/file/{form_id}")
-async def complete_form(session_id:str, score: int, dep: str, form_id:int, db: AsyncIOMotorClient = Depends(get_database)):
+async def complete_form(
+    session_id:str, 
+    score: int, 
+    dep: str, 
+    form_id:int, 
+    current_user: Annotated[User, Depends(get_current_active_user)],
+    db: AsyncIOMotorClient = Depends(get_database)
+):
     update = await cont_update_forms_by_id(score, dep, form_id, session_id, db)
     if update:
         return {"msg":f"updated form with id:{form_id} from session:{session_id} "}
