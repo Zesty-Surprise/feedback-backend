@@ -4,7 +4,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from ....core.config import access_token_expire_minutes
-from ..controllers.auth import authenticate_user, create_access_token, get_current_user
+from ....db.mongodb import AsyncIOMotorClient, get_database
+from ..controllers.auth import authenticate_user, create_access_token, get_current_user, cont_create_user
 
 from ....models.token import Token
 from ....models.user import User
@@ -51,3 +52,10 @@ async def read_own_items(
     current_user: Annotated[User, Depends(get_current_user)]
 ):
     return [{"item_id": "Foo", "owner": current_user.username}]
+
+@router.post("/users", response_model=User)
+async def add_user(user: User, db: AsyncIOMotorClient = Depends(get_database)):
+    user = await cont_create_user(user, db)    
+    if user:
+        return user
+    return HTTPException(404, f"user failed to create")

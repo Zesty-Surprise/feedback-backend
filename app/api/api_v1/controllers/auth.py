@@ -2,12 +2,15 @@ from datetime import datetime, timedelta
 from typing import Annotated
 
 from fastapi import  Depends, HTTPException, status
+from fastapi.encoders import jsonable_encoder
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from ....core.config import algorithm, secret_key
+from ....db.mongodb import AsyncIOMotorClient
+from ....repository.user import db_create_user
 
-from ....models.user import  UserInDB, User
+from ....models.user import  User
 from ....models.token import TokenData
 
 fake_users_db = {
@@ -70,4 +73,9 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     user = get_user(fake_users_db, username=token_data.username)
     if user is None:
         raise credentials_exception
+    return user
+
+async def cont_create_user(user: User, db: AsyncIOMotorClient):
+    user = jsonable_encoder(user)
+    user = await db_create_user(user, db)
     return user
