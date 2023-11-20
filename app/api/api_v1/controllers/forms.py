@@ -4,7 +4,7 @@ from ....repository.session import (
     db_update_session_by_id
 )
 from app.models.session import (
-    FeedbackSessionUpdate,
+    SessionUpdate,
     SessionForm
 )
 from ....db.mongodb import AsyncIOMotorClient
@@ -40,6 +40,6 @@ async def cont_update_forms_by_id(score: int, dep: str, form_id:int, session_id:
     form_models = []
     for form in forms:
         form_models.append(SessionForm.model_construct(form_id=form["form_id"], completed=form["completed"], score=form["score"], department=form["department"], date_completed=form['date_completed']))
-    session = FeedbackSessionUpdate.model_construct(title=None, destination=None, enps=None, forms=form_models)
+    session = SessionUpdate.model_construct(title=None, destination=None, enps=None, forms=form_models)
     update = await db_update_session_by_id(session_id, session, db)
     return update

@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException
-from typing import List
 from ....db.mongodb import AsyncIOMotorClient, get_database
 
 from ..controllers.session import (
@@ -11,10 +10,8 @@ from ..controllers.session import (
 )
 
 from app.models.session import (
-    FeedbackSessionCreate, 
-    FeedbackSessionUpdate,
-    FeedbackSession,
-    FeedbackSessionShort
+    SessionCreate, 
+    SessionUpdate
 )
 
 router = APIRouter(tags=["Sessions"])
@@ -31,15 +28,15 @@ async def get_session(id: str, db: AsyncIOMotorClient = Depends(get_database), d
         return session
     raise HTTPException(404, f"sessions {id} not found")
 
-@router.post("/sessions", response_model=FeedbackSessionCreate)
-async def add_session(session: FeedbackSessionCreate, db: AsyncIOMotorClient = Depends(get_database)):
+@router.post("/sessions", response_model=SessionCreate)
+async def add_session(session: SessionCreate, db: AsyncIOMotorClient = Depends(get_database)):
     session = await cont_create_session(session, db)  
     if session:
         return session
     return HTTPException(404, f"session failed to create")
 
-@router.put("/sessions/{id}", response_model=FeedbackSessionUpdate)
-async def update_session(id: str, request: FeedbackSessionUpdate, db: AsyncIOMotorClient = Depends(get_database)):
+@router.put("/sessions/{id}", response_model=SessionUpdate)
+async def update_session(id: str, request: SessionUpdate, db: AsyncIOMotorClient = Depends(get_database)):
     update =  await cont_update_session_by_id(id, request, db)
     if update:
         return {"msg":f"updated session with id:{id}"}

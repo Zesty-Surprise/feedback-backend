@@ -3,7 +3,7 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 from app.core.objectID import PyObjectId
 
-def datetime_now() -> datetime:
+def datetime_now():
     return datetime.now(timezone.utc)
 
 class TemplateComponent(BaseModel):

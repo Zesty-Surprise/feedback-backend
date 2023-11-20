@@ -3,8 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from ....db.mongodb import AsyncIOMotorClient, get_database
 
 from ..controllers.forms import (
-    cont_get_forms,
-    cont_get_forms_by_id,
+    # cont_get_forms,
+    # cont_get_forms_by_id,
     cont_update_forms_by_id
 )
 
