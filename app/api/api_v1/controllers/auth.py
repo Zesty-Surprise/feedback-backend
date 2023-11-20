@@ -7,7 +7,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from ....core.config import algorithm, secret_key
 
-from ....models.user import  UserInDB
+from ....models.user import  UserInDB, User
 from ....models.token import TokenData
 
 fake_users_db = {
