@@ -24,9 +24,10 @@ fake_users_db = {
 
 @router.post("/token", response_model=Token)
 async def login_for_access_token(
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+    db: AsyncIOMotorClient = Depends(get_database), 
 ):
-    user = authenticate_user(fake_users_db, form_data.username, form_data.password)
+    user = await authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -35,7 +36,7 @@ async def login_for_access_token(
         )
     access_token_expires = timedelta(minutes=access_token_expire_minutes)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"sub": user["username"]}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
 

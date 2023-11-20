@@ -6,9 +6,9 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from ....core.config import algorithm, secret_key
-from ....db.mongodb import AsyncIOMotorClient
-from ....repository.user import db_create_user
+from ....core.config import algorithm, secret_key, user_collection_name
+from ....db.mongodb import AsyncIOMotorClient, get_database
+from ....repository.user import db_create_user, db_get_user_by_username
 
 from ....models.user import  User
 from ....models.token import TokenData
@@ -33,16 +33,11 @@ def verify_password(plain_password, hashed_password):
 def get_password_hash(password):
     return pwd_context.hash(password)
 
-def get_user(db, username: str):
-    if username in db:
-        user_dict = db[username]
-        return User(**user_dict)
-
-def authenticate_user(fake_db, username: str, password: str):
-    user = get_user(fake_db, username)
+async def authenticate_user(db, username: str, password: str):
+    user = await db_get_user_by_username(username, db)
     if not user:
         return False
-    if not verify_password(password, user.password):
+    if not verify_password(password, user["password"]):
         return False
     return user
 
@@ -56,7 +51,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     encoded_jwt = jwt.encode(to_encode, secret_key, algorithm=algorithm)
     return encoded_jwt
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)],db: AsyncIOMotorClient = Depends(get_database)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -70,7 +65,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = get_user(fake_users_db, username=token_data.username)
+    user = db_get_user_by_username(db, username=token_data.username)
     if user is None:
         raise credentials_exception
     return user

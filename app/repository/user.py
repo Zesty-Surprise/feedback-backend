@@ -1,12 +1,17 @@
 from passlib.context import CryptContext
 from ..models.user import  User
 from ..core.config import database_name, user_collection_name
+from ..db.mongodb import AsyncIOMotorClient, get_database
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def get_password_hash(password):
     return pwd_context.hash(password)
+
+async def db_get_user_by_username(username:str, db:AsyncIOMotorClient)->User:
+    user : User = await db[database_name][user_collection_name].find_one({"username": username})
+    return user
 
 async def db_create_user(user: User, db):
     user["password"] = get_password_hash(user["password"])
