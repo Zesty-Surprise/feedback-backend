@@ -1,4 +1,4 @@
-python3 -m venv venv
+python -m venv venv
 if [[ "$(uname)" == "Darwin" ]]; then
   # macOS
   source venv/bin/activate
