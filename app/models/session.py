@@ -22,12 +22,18 @@ class Session(BaseModel):
         arbitrary_types_allowed=True
         json_encoders = {PyObjectId: str}
 
+class FormCustomComponent(BaseModel):
+    id: int
+    custom: str
+
 class SessionForm(BaseModel):
     form_id: int
     completed: bool
     score: Optional[int] = None 
     department: Optional[str] = None
     date_completed: Optional[datetime] = None
+    custom: Optional[List[FormCustomComponent]] = None
+
 
 class SessionShort(Session):
     completed:int

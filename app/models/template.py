@@ -1,5 +1,5 @@
 from datetime import datetime,  timezone
-from typing import List, Optional
+from typing import List, Optional, Union
 from pydantic import BaseModel, Field
 from app.core.objectID import PyObjectId
 
@@ -7,9 +7,9 @@ def datetime_now():
     return datetime.now(timezone.utc)
 
 class TemplateComponent(BaseModel):
+    id: int
     type: str 
     custom_text: str
-    default_text: str
 
     class Config:
         from_attributes = True
@@ -45,19 +45,19 @@ class TemplateCreate(BaseModel):
                 "name": "survey",
                 "components" : [
                     {
+                        "id":0,
                         "type":"enps-component",
-                        "default_text":"Fill in the score!",
-                        "custom_text":""
+                        "custom_text":"Fill in the score!"
                     },
                     {
+                        "id":1,
                         "type":"department-component",
-                        "default_text":"Select your department!",
-                        "custom_text":""
+                        "custom_text":"Fill in the Department!"
                     },
                     {
-                        "type":"written-component",
-                        "default_text":"Additional feedback?",
-                        "custom_text":""
+                        "id":2,
+                        "type":"custom-component",
+                        "custom_text":"Other questions?"
                     }
                 ]
             }
@@ -76,21 +76,21 @@ class TemplateUpdate(BaseModel):
         json_schema_extra = {
            "example": {
                 "name": "survey",
-                "components" : [
+               "components" : [
                     {
+                        "id":0,
                         "type":"enps-component",
-                        "default_text":"Fill in the score!",
-                        "custom_text":""
+                        "custom_text":"Fill in the score!"
                     },
                     {
+                        "id":1,
                         "type":"department-component",
-                        "default_text":"Select your department!",
-                        "custom_text":""
+                        "custom_text":"Fill in the Department!"
                     },
                     {
-                        "type":"written-component",
-                        "default_text":"Additional feedback?",
-                        "custom_text":""
+                        "id":2,
+                        "type":"custom-component",
+                        "custom_text":"Other questions?"
                     }
                 ]
             }

@@ -75,10 +75,10 @@ department = '''
     </div> 
 '''
 
-written = '''
+question = '''
     <div class="marginer">
     <label class="element review"><strong>{}</strong>
-     <input type="text" name="more">
+     <input name="custom{}" name="more">
     </label>
     <br>
     </div>
@@ -94,18 +94,17 @@ def build_html(components, url:str):
             build.append(set_text_for_component(comp, enps))
         elif comp['type'] == "department-component":
             build.append(set_text_for_component(comp, department))
-        elif comp['type'] == "written-component":
-            build.append(set_text_for_component(comp, written))
-    build = "".join(build)
+        elif comp['type'] == "custom-component":
+            build.append(question.format(comp['custom_text'], comp['id']))
 
-    html = head + form_url + build + footer
+    main = "".join(build)
+
+    html = head + form_url + main + footer
 
     return html
 
+
 def set_text_for_component(comp, text):
-    if comp['custom_text'] != "":
-        res = text.format(comp['custom_text'])
-    else:
-        res = text.format(comp['default_text'])
+    res = text.format(comp['custom_text'])
     return res
  

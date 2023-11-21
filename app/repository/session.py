@@ -25,7 +25,10 @@ async def db_get_session_by_id(id:str, db: AsyncIOMotorClient)->SessionDatabase:
     return session
 
 async def db_update_session_by_id(id:str, req: SessionUpdate, db:AsyncIOMotorClient):
+    
+    # !!!!!!! Errro of warning here
     request = {k: v for k, v in req.model_dump().items() if v is not None}
+
     update = await db[database_name][session_collection_name].update_one({"_id": ObjectId(id)}, {"$set": request})
     if update:
         return True
