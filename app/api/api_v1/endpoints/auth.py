@@ -45,14 +45,16 @@ async def login_for_access_token(
 async def read_users_me(
     current_user: Annotated[User, Depends(get_current_user)]
 ):
-    return current_user
+    user_data = await current_user
+    return user_data
 
 
 @router.get("/users/me/items/")
 async def read_own_items(
     current_user: Annotated[User, Depends(get_current_user)]
 ):
-    return [{"item_id": "Foo", "owner": current_user.username}]
+    current_user_instance = await current_user
+    return [{"item_id": "Foo", "owner": current_user_instance["username"]}]
 
 @router.post("/users", response_model=User)
 async def add_user(user: User, db: AsyncIOMotorClient = Depends(get_database)):
