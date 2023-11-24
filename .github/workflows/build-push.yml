@@ -6,6 +6,7 @@ on:
     branches:
       - "main"
       - "master"
+      - "develop"
     tags:
       - "v*"
 
@@ -16,13 +17,13 @@ env:
 
 # There is a single job in this workflow. It's configured to run on the latest available version of Ubuntu.
 jobs:
-  build-and-push-image:
+  build-and-push:
     runs-on: ubuntu-latest
     # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
     permissions:
       contents: read
       packages: write
-      #
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -54,3 +55,18 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+  deploy:
+    needs: build-and-push
+    name: deploy image
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: install ssh keys
+      run: |
+        install -m 600 -D /dev/null ~/.ssh/id_rsa
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+    - name: connect and pull
+      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd feedback-project && docker compose -f compose-full.yml down --volumes && docker compose -f compose-full.yml up --force-recreate --pull=always -d && exit"
+    - name: cleanup
+      run: rm -rf ~/.ssh
