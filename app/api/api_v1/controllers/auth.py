@@ -7,22 +7,12 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from ....core.config import algorithm, secret_key, user_collection_name
+from ....core.config import algorithm, secret_key
 from ....db.mongodb import AsyncIOMotorClient, get_database
-from ....repository.user import db_create_user, db_get_user_by_username
+from ....repository.user import db_create_user, db_get_user_by_username, db_get_user_by_email
 
 from ....models.user import  User
 from ....models.token import TokenData
-
-fake_users_db = {
-    "johndoe": {
-        "username": "johndoe",
-        "full_name": "John Doe",
-        "email": "johndoe@example.com",
-        "password": "$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW",
-        "disabled": False,
-    }
-}
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/token")
 
@@ -52,6 +42,15 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, secret_key, algorithm=algorithm)
     return encoded_jwt
 
+def create_token(email):
+    access_token_expires = timedelta(minutes=15)
+    access_token = create_access_token(data={'sub': email}, expires_delta=access_token_expires)
+    return access_token
+
+async def valid_email_from_db(email, db):
+    user = await db_get_user_by_email(db, email)
+    return user is not None
+
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)],db: AsyncIOMotorClient = Depends(get_database)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -66,7 +65,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)],db: Asy
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = db_get_user_by_username(db, username=token_data.username)
+    user = await db_get_user_by_username(db, username=token_data.username)
     if user is None:
         raise credentials_exception
     return user

@@ -9,6 +9,10 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def get_password_hash(password):
     return pwd_context.hash(password)
 
+async def db_get_user_by_email(db:AsyncIOMotorClient, email:str)->User:
+    user : User = await db[database_name][user_collection_name].find_one({"email": email})
+    return user
+
 async def db_get_user_by_username(db:AsyncIOMotorClient, username:str)->User:
     user : User = await db[database_name][user_collection_name].find_one({"username": username})
     return user
