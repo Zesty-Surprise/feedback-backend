@@ -4,10 +4,12 @@ from ....repository.session import (
     db_update_session_by_id
 )
 from app.models.session import (
-    FeedbackSessionUpdate,
-    SessionForm
+    SessionUpdate,
+    SessionForm,
+    FormCustomComponent
 )
 from ....db.mongodb import AsyncIOMotorClient
+from typing import List
 
 async def cont_get_forms(id: str, db:AsyncIOMotorClient):
     session = await db_get_session_by_id(id, db)
@@ -22,24 +24,26 @@ async def cont_get_forms_by_id(form_id:int, session_id:str, db:AsyncIOMotorClien
             selected_form = form
     return selected_form
 
-async def cont_update_forms_by_id(score: int, dep: str, form_id:int, session_id:str, db:AsyncIOMotorClient):
+async def cont_update_forms_by_id(score: int, dep: str, form_id:int, session_id:str, db:AsyncIOMotorClient, custom: List[FormCustomComponent] = None):
     form = await cont_get_forms_by_id(form_id, session_id, db)
     if form["completed"]:
         return
-    forms = await cont_get_forms(session_id, db)
+    forms : List[SessionForm] = await cont_get_forms(session_id, db)
     update_form : SessionForm = {
             "form_id" : form_id,
             "completed":True,
             "score":score,
             "department":dep,
-            "date_completed": datetime.now(timezone.utc)
+            "date_completed": datetime.now(timezone.utc),
+            "custom": custom 
     }
+
     for i, form in enumerate(forms):
         if form["form_id"] == form_id:
             forms[i] = update_form
     form_models = []
     for form in forms:
-        form_models.append(SessionForm.model_construct(form_id=form["form_id"], completed=form["completed"], score=form["score"], department=form["department"], date_completed=form['date_completed']))
-    session = FeedbackSessionUpdate.model_construct(title=None, destination=None, enps=None, forms=form_models)
+        form_models.append(SessionForm.model_construct(form_id=form["form_id"], completed=form["completed"], score=form["score"], department=form["department"], date_completed=form['date_completed'], custom=form['custom']))
+    session = SessionUpdate.model_construct(title=None, destination=None, enps=None, forms=form_models)
     update = await db_update_session_by_id(session_id, session, db)
     return update

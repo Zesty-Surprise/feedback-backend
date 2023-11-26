@@ -7,57 +7,45 @@ from app.core.objectID import PyObjectId
 def datetime_now():
     return datetime.now(timezone.utc)
 
+class Session(BaseModel):
+    id: PyObjectId = Field(alias="_id")
+    title: str
+    date_created: Optional[datetime] = None
+    date_updated: Optional[datetime] = None
+    destination: str
+    template: str
+    form_count:int
+
+    class Config:
+        from_attributes = True
+        populate_by_name = True
+        arbitrary_types_allowed=True
+        json_encoders = {PyObjectId: str}
+
+class FormCustomComponent(BaseModel):
+    id: int
+    custom: str
+
 class SessionForm(BaseModel):
     form_id: int
     completed: bool
     score: Optional[int] = None 
     department: Optional[str] = None
     date_completed: Optional[datetime] = None
-    
-class FeedbackSessionShort(BaseModel):
-    id: PyObjectId = Field(alias="_id")
-    title: str
-    date_created: Optional[datetime] = None
-    date_updated: Optional[datetime] = None
-    destination: str
-    template: str
-    form_count:int
+    custom: Optional[List[FormCustomComponent]] = None
+
+
+class SessionShort(Session):
     completed:int
     promoters:int
     passive:int
     demoter:int
     score:float
-    
-    class Config:
-        from_attributes = True
-        populate_by_name = True
-        arbitrary_types_allowed=True
-        json_encoders = {PyObjectId: str}
 
-class FeedbackSessionDatabase(BaseModel):
-    id: PyObjectId = Field(alias="_id")
-    title: str
-    date_created: Optional[datetime] = None
-    date_updated: Optional[datetime] = None
-    destination: str
-    template: str
-    form_count:int
+class SessionDatabase(Session):
     forms:List[SessionForm]
     
-    class Config:
-        from_attributes = True
-        populate_by_name = True
-        arbitrary_types_allowed=True
-        json_encoders = {PyObjectId: str}
-
-class FeedbackSession(BaseModel):
-    id: PyObjectId = Field(alias="_id")
-    title: str
-    destination: str
-    template: str
-    form_count:int
-    date_created: Optional[datetime] = None
-    date_updated: Optional[datetime] = None
+class SessionLong(Session):
     forms:List[SessionForm]
 
     @computed_field(return_type=int)
@@ -107,13 +95,8 @@ class FeedbackSession(BaseModel):
             score = ((self.promoters-self.demoter)/self.completed)*100
         return score
         
-    class Config:
-        from_attributes = True
-        populate_by_name = True
-        arbitrary_types_allowed=True
-        json_encoders = {PyObjectId: str}
 
-class FeedbackSessionCreate(BaseModel):
+class SessionCreate(BaseModel):
     title: str
     destination: str
     form_count: int
@@ -137,7 +120,7 @@ class FeedbackSessionCreate(BaseModel):
             }
         }
 
-class FeedbackSessionUpdate(BaseModel):
+class SessionUpdate(BaseModel):
 
     title: Optional[str] = None
     destination: Optional[str] = None

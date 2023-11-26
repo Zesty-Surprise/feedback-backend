@@ -21,7 +21,6 @@ async def db_get_template_by_id(id:str, db: AsyncIOMotorClient)->Template:
     return template
 
 async def db_update_template_by_id(id:str, request, db:AsyncIOMotorClient):
-    # request = {k: v for k, v in req.model_dump().items() if v is not None}
     update = await db[database_name][template_collection_name].update_one({"_id": ObjectId(id)}, {"$set": request})
     if update:
         return True

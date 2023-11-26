@@ -1,6 +1,5 @@
-from fastapi import APIRouter, Depends
 from typing import Annotated
-
+from fastapi import APIRouter, Depends
 from fastapi.responses import HTMLResponse
 from ....db.mongodb import AsyncIOMotorClient, get_database
 from ..controllers.auth import get_current_user
@@ -25,8 +24,11 @@ async def get_submit_view(
 ):
     session = await cont_get_session_by_id(session_id, db)
     template_id = session.template
+    
     template = await db_get_template_by_id(template_id, db)
-    url = str(form_id) + "?session_id=" + str(session_id)
+    
+    url = str(session_id) + "/" + str(form_id) + "/" 
+    
     html = build_html(template['components'], url)
     
     return html

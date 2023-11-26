@@ -1,16 +1,16 @@
-from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException
-from ..controllers.auth import get_current_user
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+
+import re
 
 from ....db.mongodb import AsyncIOMotorClient, get_database
 
 from ..controllers.forms import (
-    cont_get_forms,
-    cont_get_forms_by_id,
+    # cont_get_forms,
+    # cont_get_forms_by_id,
     cont_update_forms_by_id
 )
 
-from ....models.user import User
+from ....models.session import FormCustomComponent
 
 router = APIRouter(tags=["Forms"])
 
@@ -26,16 +26,19 @@ router = APIRouter(tags=["Forms"])
 #     form = await cont_get_forms_by_id(form_id, session_id, db)
 #     return form
 
-@router.get("/file/{form_id}")
-async def complete_form(
-    session_id:str, 
-    score: int, 
-    dep: str, 
-    form_id:int, 
-    current_user: Annotated[User, Depends(get_current_user)],
-    db: AsyncIOMotorClient = Depends(get_database)
-):
-    update = await cont_update_forms_by_id(score, dep, form_id, session_id, db)
+@router.get("/file/{session_id}/{form_id}")
+async def complete_form(request: Request, session_id:str, form_id:int, score: int = Query(..., description="A required fixed parameter"), dep: str = Query(..., description="A required fixed parameter"), db: AsyncIOMotorClient = Depends(get_database)):
+    
+    custom = []
+    for key in request.query_params:
+        k = str(key)
+        if "custom" in k:
+            match  = re.search(r'\d+', str(k))
+            id = int(match.group()) if match else None
+            comp = FormCustomComponent.model_construct(id=id, custom=request.query_params[k])
+            custom.append(comp)
+
+    update = await cont_update_forms_by_id(score, dep, form_id, session_id, db, custom)
     if update:
         return {"msg":f"updated form with id:{form_id} from session:{session_id} "}
     raise HTTPException(404, f"form {id} not found")
