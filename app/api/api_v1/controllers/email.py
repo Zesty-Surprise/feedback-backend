@@ -80,7 +80,6 @@ def cont_send_email(background_tasks: BackgroundTasks, subject: str, email_to: l
         main = '<a href="https://{}/api/email/submit/{}/{}" target="_blank">Click here to fill in the survey</a>'.format(host, session_id, form_id)
 
     fallback_html = head_fall + main + footer_fall
-    print(fallback_html)
 
     try:
         #Important: Some email clients only render the last MIME part, so it is
