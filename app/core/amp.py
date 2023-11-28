@@ -1,3 +1,9 @@
+global head
+global footer
+global enps
+global department
+global question 
+
 head = '''
     <!doctype html>
     <html amp4email data-css-strict lang="en">
