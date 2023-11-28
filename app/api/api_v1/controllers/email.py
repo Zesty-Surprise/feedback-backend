@@ -8,6 +8,7 @@ from ....core.amp import (
             head_fall,
             footer_amp,
             footer_fall,
+            logo,
             enps,
             department,
             question,
@@ -53,7 +54,7 @@ def cont_get_html(template, session_id: str, form_id: int):
 
     main = "".join(build)
 
-    html = head_amp + form_url + main + footer_amp
+    html = head_amp + form_url + logo + main + footer_amp
 
     return html
 
@@ -75,11 +76,11 @@ def cont_send_email(background_tasks: BackgroundTasks, subject: str, email_to: l
 
     host = Envs.BACKEND_HOST
     if (host == "localhost" or host == "127.0.0.1"):
-        main = '<a href="http://{}/api/email/submit/{}/{}" target="_blank">Click here to fill in the survey</a>'.format(host, session_id, form_id)
+        main = '<a href="http://{}/api/email/submit/{}/{}" target="_blank"><div class="button">Go to the survey!</div></a>'.format(host, session_id, form_id)
     else:
-        main = '<a href="https://{}/api/email/submit/{}/{}" target="_blank">Click here to fill in the survey</a>'.format(host, session_id, form_id)
+        main = '<a href="https://{}/api/email/submit/{}/{}" target="_blank"><div class="button">Go to the survey!</div></a>'.format(host, session_id, form_id)
 
-    fallback_html = head_fall + main + footer_fall
+    fallback_html = head_fall + logo + main + footer_fall
 
     try:
         #Important: Some email clients only render the last MIME part, so it is
