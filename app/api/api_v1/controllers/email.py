@@ -1,12 +1,13 @@
 import os
 from dotenv import load_dotenv
-# from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType, MultipartSubtypeEnum
 from fastapi import BackgroundTasks
 from ....fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType, MultipartSubtypeEnum
 
 from ....core.amp import (
-            head,
-            footer,
+            head_amp,
+            head_fall,
+            footer_amp,
+            footer_fall,
             enps,
             department,
             question,
@@ -20,7 +21,7 @@ class Envs:
     MAIL_FROM = os.getenv('MAIL_FROM')
     MAIL_PORT = int(os.getenv('MAIL_PORT') or "587")
     MAIL_SERVER = os.getenv('MAIL_SERVER') 
-    BACKEND_HOST = os.getenv('BACKEND_HOST') 
+    BACKEND_HOST = os.getenv('BACKEND_HOST') or "localhost"
 
 conf = ConnectionConfig(
     MAIL_USERNAME=Envs.MAIL_USERNAME,
@@ -33,8 +34,7 @@ conf = ConnectionConfig(
     USE_CREDENTIALS=True,
 )
 
-def cont_get_html(template, session_id, form_id):
-    # TODO: handle AMP fallback. Tell user to go on our webpage.
+def cont_get_html(template, session_id: str, form_id: int):
     host = Envs.BACKEND_HOST
     if (host == "localhost" or host == "127.0.0.1"):
         form_url = '<form action-xhr="http://{}/api/file/{}/{}" method="get" id="ic-form">'.format(host, session_id, form_id)
@@ -53,26 +53,34 @@ def cont_get_html(template, session_id, form_id):
 
     main = "".join(build)
 
-    html = head + form_url + main + footer
-    print(html)
+    html = head_amp + form_url + main + footer_amp
 
     return html
 
 
-def cont_send_email(background_tasks: BackgroundTasks, subject: str, email_to: list[str], body: str):
+def cont_send_email(background_tasks: BackgroundTasks, subject: str, email_to: list[str], template, session_id: str, form_id: int):
+
+    if (Envs.MAIL_USERNAME == None or 
+        Envs.MAIL_PASSWORD == None or
+        Envs.MAIL_FROM == None or
+        Envs.MAIL_PORT == None or
+        Envs.MAIL_SERVER == None or
+        Envs.BACKEND_HOST == None):
+        print("Environment variables not set.")
+        return False
+
+    amp_html = cont_get_html(template, session_id, form_id)
+
     # https://www.appsloveworld.com/python/661/how-to-send-amp-email-from-python-how-is-it-technically-different-from-normal-em
-    test ="""
-    <html>
-  <head>
-  <meta charset="utf-8">    
-</head>
-  <body>
-    <p>Hi!<br>
-    </p>
-    <h1>Hello, I am an HTML MAIL!</h1>
-  </body>
-</html>
-    """
+
+    host = Envs.BACKEND_HOST
+    if (host == "localhost" or host == "127.0.0.1"):
+        main = '<a href="http://{}/api/email/submit/{}/{}" target="_blank">Click here to fill in the survey</a>'.format(host, session_id, form_id)
+    else:
+        main = '<a href="https://{}/api/email/submit/{}/{}" target="_blank">Click here to fill in the survey</a>'.format(host, session_id, form_id)
+
+    fallback_html = head_fall + main + footer_fall
+    print(fallback_html)
 
     try:
         #Important: Some email clients only render the last MIME part, so it is
@@ -80,9 +88,9 @@ def cont_send_email(background_tasks: BackgroundTasks, subject: str, email_to: l
         message = MessageSchema(
             subject=subject,
             recipients=email_to,
-            body=body,
+            body=amp_html,
             subtype=MessageType.amp,
-            alternative_body=test,
+            alternative_body=fallback_html,
             multipart_subtype = MultipartSubtypeEnum.alternative
         )    
         fm = FastMail(conf)

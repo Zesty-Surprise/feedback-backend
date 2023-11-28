@@ -1,10 +1,12 @@
-global head
-global footer
+global head_amp
+global head_fall
+global footer_amp
+global footer_fall
 global enps
 global department
 global question 
 
-head = '''
+head_amp = '''
     <!doctype html>
     <html amp4email data-css-strict lang="en">
     <head>
@@ -35,10 +37,42 @@ head = '''
     <article class="wrapper" aria-label="placeholder aria label" lang="en">
     '''
 
-footer = '''
+head_fall = '''
+    <!doctype html>
+    <html lang="en">
+    <head>
+    <meta charset="utf-8">
+    <style >
+    .wrapper {
+      position: relative;
+      max-width: 38.5em;
+      margin: 0 auto;
+      margin-top: 30px;
+      text-align: center;
+      align-content: center;
+      font-family: arial, sans-serif;
+      font-size: 1rem;
+      background: #fff;
+      color: #393939;
+    }
+    .marginer{
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+    </style>
+    </head>
+    <body>
+    '''
+
+footer_amp = '''
     <button class="submit faux">SUBMIT YOUR REVIEW</button>
     </form>
     </article>
+    </body>
+    </html>
+'''
+
+footer_fall = '''
     </body>
     </html>
 '''
@@ -89,28 +123,3 @@ question = '''
     <br>
     </div>
 '''
-
-def build_html(components, url:str):
-    host = 'localhost:8000'
-    form_url = '<form action-xhr="http://{}/api/file/{}" method="get" id="ic-form">'.format(host, url)
-    build = []
-    
-    for comp in components:
-        if comp['type'] == "enps-component":
-            build.append(set_text_for_component(comp, enps))
-        elif comp['type'] == "department-component":
-            build.append(set_text_for_component(comp, department))
-        elif comp['type'] == "custom-component":
-            build.append(question.format(comp['custom_text'], comp['id']))
-
-    main = "".join(build)
-
-    html = head + form_url + main + footer
-
-    return html
-
-
-def set_text_for_component(comp, text):
-    res = text.format(comp['custom_text'])
-    return res
- 

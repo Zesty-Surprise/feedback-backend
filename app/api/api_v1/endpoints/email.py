@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, BackgroundTasks, Request
+from fastapi import APIRouter, Depends, BackgroundTasks 
+from fastapi.responses import HTMLResponse
 from ....db.mongodb import AsyncIOMotorClient, get_database
 from ..controllers.session import (
     cont_get_session_by_id
@@ -19,7 +20,7 @@ async def complete_form(session_id:str, form_id:int, db: AsyncIOMotorClient = De
     template = await db_get_template_by_id(template_id, db)
     html = cont_get_html(template, session_id, form_id)
     
-    return html
+    return HTMLResponse(content=html, status_code=200)
 
 @router.get("/email/send", status_code=200)
 async def get_send_email(background_tasks: BackgroundTasks, session_id:str, form_id:int, db: AsyncIOMotorClient = Depends(get_database)):
@@ -33,9 +34,9 @@ async def get_send_email(background_tasks: BackgroundTasks, session_id:str, form
     session = await cont_get_session_by_id(session_id, db)
     template_id = session.template
     template = await db_get_template_by_id(template_id, db)
-    html = cont_get_html(template, session_id, form_id)
 
-    success = cont_send_email(background_tasks, "TEST - Feedback form", ["bobpanda.bp@gmail.com"], html)
+    success = cont_send_email(background_tasks, "TEST - Feedback form", ["bobpanda.bp@gmail.com"], template, session_id, form_id)
+
     if success: 
         return {"message": "Successfully sent email(s)."}
     
