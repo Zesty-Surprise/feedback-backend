@@ -23,7 +23,7 @@ template = {
 
 session = {
   "title": "Seeded Durvey",
-  "destination": "*@ys.com",
+  "emails": ["bobpanda.bp@gmail.com"],
   "form_count": 130,
   "date_created": "2023-11-14T13:26:06.876397Z",
   "date_updated": None,

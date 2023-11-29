@@ -12,7 +12,7 @@ class Session(BaseModel):
     title: str
     date_created: Optional[datetime] = None
     date_updated: Optional[datetime] = None
-    destination: str
+    emails: List[str]
     template: str
     form_count:int
 
@@ -98,7 +98,7 @@ class SessionLong(Session):
 
 class SessionCreate(BaseModel):
     title: str
-    destination: str
+    emails: List[str]
     form_count: int
     template: str
     form_count:int
@@ -113,7 +113,7 @@ class SessionCreate(BaseModel):
         json_schema_extra = {
             "example": {
                 "title": "Sample eNPS Survey",
-                "destination": "*@ys.com",
+                "emails": ["bobpanda.bp@gmail.com"],
                 "form_count":1,
                 "template":"",
                 "forms":[]
@@ -123,9 +123,9 @@ class SessionCreate(BaseModel):
 class SessionUpdate(BaseModel):
 
     title: Optional[str] = None
-    destination: Optional[str] = None
+    emails: Optional[List[str]] = None
     template: Optional[str] = None
-    forms:List[SessionForm] = None
+    forms: List[SessionForm] = None
     date_updated: datetime = Field(default_factory=datetime_now)
 
     class Config:
@@ -135,7 +135,7 @@ class SessionUpdate(BaseModel):
         json_schema_extra = {
             "example": {
                 "title": "Sample eNPS Survey",
-                "destination": "*@ys.com",
+                "emails": ["bobpanda.bp@gmail.com"],
                 "template":"",
                 "forms":[]
             }

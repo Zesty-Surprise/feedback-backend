@@ -12,5 +12,7 @@ elif [[ "$(expr substr $(uname -s) 1 10)" == "MINGW64_NT" ]]; then
   # 64-bit Windows (MINGW64_NT*)
   source venv/Scripts/activate
 fi
+
+export MONGODB_URL=mongodb://localhost:27017
 pip install -r requirements.txt
 uvicorn app.main:app --reload
