@@ -29,13 +29,12 @@ async def get_send_email(background_tasks: BackgroundTasks, session_id:str, form
     # 3. Generate HTML document from template
     # 4. Retrieve list of email address (i.e., destination) from session
     # 5. Retrieve object (or title) of email from session
-    #    Currently "*@ysp.com" so doesn't work. When fixed, use session.destination
 
     session = await cont_get_session_by_id(session_id, db)
     template_id = session.template
     template = await db_get_template_by_id(template_id, db)
 
-    success = cont_send_email(background_tasks, "TEST - Feedback form", ["bobpanda.bp@gmail.com"], template, session_id, form_id)
+    success = cont_send_email(background_tasks, "TEST - Feedback form", session.emails, template, session_id, form_id)
 
     if success: 
         return {"message": "Successfully sent email(s)."}
