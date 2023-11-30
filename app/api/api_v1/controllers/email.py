@@ -41,9 +41,13 @@ def cont_get_html(template, session_id: str, form_id: int):
         form_url = '<form action-xhr="http://{}/api/file/{}/{}" method="get" id="ic-form">'.format(host, session_id, form_id)
     else:
         form_url = '<form action-xhr="https://{}/api/file/{}/{}" method="get" id="ic-form">'.format(host, session_id, form_id)
-
-    build = []
     
+    html = cont_html_assemble(template=template, form_url=form_url)
+    
+    return html
+
+def cont_html_assemble(template, form_url: str):
+    build = []
     for comp in template["components"]:
         if comp['type'] == "enps-component":
             build.append(set_text_for_component(comp, enps))
@@ -51,9 +55,7 @@ def cont_get_html(template, session_id: str, form_id: int):
             build.append(set_text_for_component(comp, department))
         elif comp['type'] == "custom-component":
             build.append(question.format(comp['custom_text'], comp['id']))
-
     main = "".join(build)
-
     html = head_amp + form_url + logo + main + footer_amp
 
     return html

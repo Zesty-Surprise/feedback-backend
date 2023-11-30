@@ -12,6 +12,5 @@ router = APIRouter(tags=["Seeder"])
 async def seed_database(db: AsyncIOMotorClient = Depends(get_database)):
     t = await cont_create_template(template, db)
     session['template'] = str(t['_id'])
-    # s = SessionCreate.model_construct(session)
     seed = await db_create_session(session, db)
     return {"message":"Seeded Database"}

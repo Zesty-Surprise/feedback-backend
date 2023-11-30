@@ -14,18 +14,6 @@ from ....models.session import FormCustomComponent
 
 router = APIRouter(tags=["Forms"])
 
-# NOT SURE IF WE NEED THIS
-# @router.get("/forms")
-# async def get_all_forms_by_session(session_id:str, db: AsyncIOMotorClient = Depends(get_database)):
-#     forms = await cont_get_forms(session_id, db)
-#     return forms
-
-# NOT SURE IF WE NEED THIS
-# @router.get("/forms/{form_id}")
-# async def get_form_by_id(form_id:int, session_id:str, db: AsyncIOMotorClient = Depends(get_database)):
-#     form = await cont_get_forms_by_id(form_id, session_id, db)
-#     return form
-
 @router.get("/file/{session_id}/{form_id}")
 async def complete_form(request: Request, session_id:str, form_id:int, score: int = Query(..., description="A required fixed parameter"), dep: str = Query(..., description="A required fixed parameter"), db: AsyncIOMotorClient = Depends(get_database)):
     
