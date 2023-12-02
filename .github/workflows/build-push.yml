@@ -1,4 +1,4 @@
-name: Create and publish a Backend image
+name: Test, build and publish a Backend image
 
 # Configures this workflow to run every time a change is pushed to the branch called `release`.
 on:
@@ -17,7 +17,35 @@ env:
 
 # There is a single job in this workflow. It's configured to run on the latest available version of Ubuntu.
 jobs:
+  tests:
+      name: Tests
+      runs-on: ubuntu-latest
+      permissions: read-all
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
+        - name: SonarQube analysis
+          uses: sonarsource/sonarqube-scan-action@master
+          env:
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+            SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        - name: Build image from Dockerfile
+          run: |
+            docker build -t ysp/backend:${{ github.sha }} .
+        - name: Run Trivy vulnerability scanner
+          uses: aquasecurity/trivy-action@master
+          with:
+            image-ref: 'ysp/backend:${{ github.sha }}'
+            format: 'table'
+            exit-code: '1'
+            ignore-unfixed: true
+            vuln-type: 'os,library'
+            severity: 'CRITICAL,HIGH'
+
   build-and-push:
+    needs: tests
     runs-on: ubuntu-latest
     # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
     permissions:
@@ -67,6 +95,6 @@ jobs:
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
     - name: connect and pull
-      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd feedback-project && docker compose -f compose-full.yml down --volumes && docker compose -f compose-full.yml up --force-recreate --pull=always -d && exit"
+      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd feedback-project && docker compose -f compose-full.yml -p app down --volumes && docker compose -f compose-full.yml -p app up --force-recreate --pull=always -d && exit"
     - name: cleanup
       run: rm -rf ~/.ssh
