@@ -1,9 +1,10 @@
 import logging
 from typing import Annotated
 from authlib.integrations.starlette_client import OAuth, OAuthError
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status, Query
+from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
-from ....core.config import  google_client_id, google_client_secret
+from ....core.config import  google_client_id, google_client_secret, secret_key
 from ....db.mongodb import AsyncIOMotorClient, get_database
 from ..controllers.auth import authenticate_user, get_current_user, cont_create_user, create_token, valid_email_from_db
 
@@ -24,7 +25,7 @@ oauth.register(
     server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
     client_kwargs={'scope': 'openid email profile'},
     client_id=config_data['GOOGLE_CLIENT_ID'],
-    client_secret=config_data['GOOGLE_CLIENT_SECRET']
+    client_secret=config_data['GOOGLE_CLIENT_SECRET'],
 )
 
 CREDENTIALS_EXCEPTION = HTTPException(
@@ -72,7 +73,7 @@ async def login_for_access_token(
 @router.get('/login')
 async def google_login(request: Request):
     google = oauth.create_client('google')
-    redirect_uri = request.url_for('token')
+    redirect_uri = "http://localhost:5173/auth/google_login"
     return await google.authorize_redirect(request, redirect_uri)
 
 @router.get('/token', name="token")

@@ -24,8 +24,8 @@ def verify_password(plain_password, hashed_password):
 def get_password_hash(password):
     return pwd_context.hash(password)
 
-async def authenticate_user(db, username: str, password: str):
-    user = await db_get_user_by_username(db, username)
+async def authenticate_user(db, email: str, password: str):
+    user = await db_get_user_by_email(db, email)
     if not user:
         return False
     if not verify_password(password, user["password"]):
