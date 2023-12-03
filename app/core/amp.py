@@ -1,4 +1,13 @@
-head = '''
+global head_amp
+global head_fall
+global footer_amp
+global footer_fall
+global logo
+global enps
+global department
+global question 
+
+head_amp = '''
     <!DOCTYPE html>
 <html amp4email data-css-strict lang="en">
   <head>
@@ -125,10 +134,130 @@ logo = '''
 '''
 
 
+head_fall = '''
+    <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      p {
+        font-weight: bold;
+      }
+      body {
+        background: #f5e5d3;
+        font-family: "Montserrat", Arial, Helvetica, sans-serif;
+        color: #595959;
+      }
+      .container {
+        max-width: 420px;
+        margin: 50px auto;
+        background-color: #fcf8f4;
+        padding: 20px 50px 50px 50px;
+        border-radius: 10px;
+        box-shadow: 10px 10px 2px 2px #e6d5c3;
+      }
+      .feedback-input {
+        font-weight: 500;
+        font-size: 18px;
+        line-height: 22px;
+        margin-bottom: 15px;
+        padding: 13px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      textarea {
+        height: 150px;
+        line-height: 150%;
+        border-radius: 10px;
+        border-width: 2px;
+        border-color: #de896e;
+        background-color: #fcf8f4;
+        resize: none;
+      }
+      .radio-label {
+        display: inline-block;
+        vertical-align: top;
+        margin-top: 0.5%;
+        margin-right: 1.5%;
+      }
 
-footer = '''
+      .feedback-input {
+        appearance: none;
+        border: 2px solid #de896e;
+        background-color: #fcf8f4;
+        font-family: "Montserrat", Arial, Helvetica, sans-serif;
+      }
+      .radio-input {
+        display: inline-block;
+        appearance: none;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        border: 2px solid #de896e;
+        background-color: #fcf8f4;
+        margin-right: 3.3%;
+      }
+      .radio-label {
+        display: inline-block;
+        appearance: none;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        margin-left: 9px;
+      }
+      .radio-input:checked {
+        border: 6px solid #96533f;
+      }
+      .enps {
+        border-radius: 10px;
+        border-width: 10px;
+        margin: auto;
+      }
+      .button{
+        margin-top: 3%;
+        width: 100%;
+        font-size: 20px;
+        font-weight: 700;
+        color: #fcf8f4;
+        border-radius: 10px;
+        border: 0;
+        background-color: #595959;
+        padding: 10px;
+      }
+      a:link{
+        text-decoration: none;
+        text-align: center;
+        font-size: 20px;
+        font-weight: 700;
+      }
+      a{
+        text-decoration: none;
+        text-align: center;
+        font-size: 20px;
+        font-weight: 700;
+      }
+      img{
+        margin-bottom: 5%;
+      }
+      h1{
+       font-size: 65px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">      
+    '''
+
+footer_amp = '''
             <input type="submit" value="SUBMIT" class="submit" />
       </form>
+    </div>
+  </body>
+</html>
+'''
+
+footer_fall = '''
     </div>
   </body>
 </html>
@@ -183,24 +312,3 @@ question = '''
     <p class="text">{}</p>
     <textarea name="custom{}" class="feedback-input"></textarea>
 '''
-
-def build_html(components, url:str):
-    host = 'localhost:8000'
-    form_url = '<form action-xhr="http://{}/api/file/{}" method="get" id="ic-form">'.format(host, url)
-    build = []
-    for comp in components:
-        if comp['type'] == "enps-component":
-            build.append(set_text_for_component(comp, enps))
-        elif comp['type'] == "department-component":
-            build.append(set_text_for_component(comp, department))
-        elif comp['type'] == "custom-component":
-            build.append(question.format(comp['custom_text'], comp['id']))
-    main = "".join(build)
-    html = head + form_url + logo + main + footer
-    return html
-
-
-def set_text_for_component(comp, text):
-    res = text.format(comp['custom_text'])
-    return res
- 

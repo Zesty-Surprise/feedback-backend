@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+
 from ....db.mongodb import AsyncIOMotorClient, get_database
 from ..controllers.template import (
     cont_get_templates,
