@@ -44,14 +44,23 @@ async def get_session(
     raise HTTPException(404, f"sessions {id} not found")
 
 @router.post("/sessions", response_model=SessionCreate)
-async def add_session(session: SessionCreate, db: AsyncIOMotorClient = Depends(get_database)):
+async def add_session(
+    session: SessionCreate,    
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: AsyncIOMotorClient = Depends(get_database)
+):
     session = await cont_create_session(session, db)  
     if session:
         return session
     return HTTPException(404, f"session failed to create")
 
 @router.put("/sessions/{id}", response_model=SessionUpdate)
-async def update_session(id: str, request: SessionUpdate, db: AsyncIOMotorClient = Depends(get_database)):
+async def update_session(
+    id: str, 
+    request: SessionUpdate, 
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: AsyncIOMotorClient = Depends(get_database)
+):
     update =  await cont_update_session_by_id(id, request, db)
     if update:
         return {"msg":f"updated session with id:{id}"}

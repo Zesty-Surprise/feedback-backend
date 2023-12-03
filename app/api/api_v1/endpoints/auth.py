@@ -34,19 +34,6 @@ CREDENTIALS_EXCEPTION = HTTPException(
     headers={'WWW-Authenticate': 'Bearer'},
 )
 
-@router.get("/users/me/", response_model=User)
-async def read_users_me(
-    current_user: Annotated[User, Depends(get_current_user)]
-):
-    return current_user
-
-
-@router.get("/users/me/items/")
-async def read_own_items(
-    current_user: Annotated[User, Depends(get_current_user)]
-):
-    return [{"item_id": "Foo", "owner": current_user["username"]}]
-
 @router.post("/users", response_model=User)
 async def add_user(user: User, db: AsyncIOMotorClient = Depends(get_database)):
     user = await cont_create_user(user, db)    

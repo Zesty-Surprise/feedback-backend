@@ -1,8 +1,12 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
 import re
 
 from ....db.mongodb import AsyncIOMotorClient, get_database
+from ..controllers.auth import get_current_user
+from ....models.user import User
 
 from ..controllers.forms import (
     # cont_get_forms,
@@ -15,8 +19,16 @@ from ....models.session import FormCustomComponent
 router = APIRouter(tags=["Forms"])
 
 @router.get("/file/{session_id}/{form_id}")
-async def complete_form(request: Request, session_id:str, form_id:int, score: int = Query(..., description="A required fixed parameter"), dep: str = Query(..., description="A required fixed parameter"), db: AsyncIOMotorClient = Depends(get_database)):
-    
+async def complete_form(
+    request: Request, 
+    session_id:str, 
+    form_id:int, 
+    current_user: Annotated[User, Depends(get_current_user)],
+    score: int = Query(..., description="A required fixed parameter"), 
+    dep: str = Query(..., description="A required fixed parameter"), 
+    db: AsyncIOMotorClient = Depends(get_database),
+):
+
     custom = []
     for key in request.query_params:
         k = str(key)

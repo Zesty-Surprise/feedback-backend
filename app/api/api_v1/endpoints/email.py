@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, BackgroundTasks 
 from fastapi.responses import HTMLResponse
 from ....db.mongodb import AsyncIOMotorClient, get_database
@@ -19,7 +21,12 @@ from ....models.user import User
 
 router = APIRouter(tags=["Email"])
 @router.get("/email/submit/{session_id}/{form_id}")
-async def complete_form(session_id:str, form_id:int, db: AsyncIOMotorClient = Depends(get_database)):
+async def complete_form(
+    session_id:str, 
+    form_id:int, 
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: AsyncIOMotorClient = Depends(get_database)
+):
     session = await cont_get_session_by_id(session_id, db)
     template_id = session.template
     template = await cont_get_template_by_id(template_id, db)
@@ -28,13 +35,23 @@ async def complete_form(session_id:str, form_id:int, db: AsyncIOMotorClient = De
     return HTMLResponse(content=html, status_code=200)
 
 @router.get("/email/{template_id}", response_class=HTMLResponse)
-async def get_preview_template(template_id:str, db: AsyncIOMotorClient = Depends(get_database)):
+async def get_preview_template(
+    template_id:str, 
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: AsyncIOMotorClient = Depends(get_database)
+):
     template = await cont_get_template_by_id(template_id,db)
     html = cont_html_assemble(template, "")
     return html
 
 @router.get("/email/send", status_code=200)
-async def get_send_email(background_tasks: BackgroundTasks, session_id:str, form_id:int, db: AsyncIOMotorClient = Depends(get_database)):
+async def get_send_email(
+    background_tasks: BackgroundTasks, 
+    session_id:str, 
+    form_id:int, 
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: AsyncIOMotorClient = Depends(get_database)
+):
     # 1. Get session information
     # 2. Retrieve template from session
     # 3. Generate HTML document from template
