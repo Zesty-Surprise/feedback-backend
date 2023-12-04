@@ -93,6 +93,10 @@ head_amp = '''
         background-color: #595959;
         padding: 10px;
       }
+      .submit:hover {
+        background-color: #de896e;
+        cursor: pointer;
+      }
     </style>
   </head>
 
@@ -103,6 +107,11 @@ head_amp = '''
 logo = '''
     <amp-img alt="yoursuprise" src="https://s3-eu-west-1.amazonaws.com/tpd/logos/496768280000640005040244/0x0.png" width="50" height="10" layout="responsive">
     </amp-img>   
+'''
+
+logo_fall = '''
+    <img alt="yoursuprise" src="https://s3-eu-west-1.amazonaws.com/tpd/logos/496768280000640005040244/0x0.png">
+    </img>   
 '''
 
 
@@ -197,6 +206,9 @@ head_fall = '''
         border: 0;
         background-color: #595959;
         padding: 10px;
+      }
+      .button:hover{
+        background-color: #de896e;
       }
       a:link{
         text-decoration: none;

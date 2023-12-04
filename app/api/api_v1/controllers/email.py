@@ -9,6 +9,7 @@ from ....core.amp import (
             footer_amp,
             footer_fall,
             logo,
+            logo_fall,
             enps,
             department,
             question,
@@ -35,12 +36,12 @@ conf = ConnectionConfig(
     USE_CREDENTIALS=True,
 )
 
-def cont_get_html(template, session_id: str, form_id: int):
+def cont_get_html(template, session_id: str, form_id: str):
     host = Envs.BACKEND_HOST
     if (host == "localhost" or host == "127.0.0.1"):
-        form_url = '<form action-xhr="http://{}/api/file/{}/{}" method="get" id="ic-form">'.format(host, session_id, form_id)
+        form_url = '<form action-xhr="http://{}:8000/api/file/{}/{}" method="get" id="ic-form">'.format(host, session_id, form_id)
     else:
-        form_url = '<form action-xhr="https://{}/api/file/{}/{}" method="get" id="ic-form">'.format(host, session_id, form_id)
+        form_url = '<form action-xhr="https://{}:8000/api/file/{}/{}" method="get" id="ic-form">'.format(host, session_id, form_id)
     
     html = cont_html_assemble(template=template, form_url=form_url)
     
@@ -60,46 +61,88 @@ def cont_html_assemble(template, form_url: str):
 
     return html
 
-
-def cont_send_email(background_tasks: BackgroundTasks, subject: str, email_to: list[str], template, session_id: str, form_id: int):
-
-    if (Envs.MAIL_USERNAME == None or 
-        Envs.MAIL_PASSWORD == None or
-        Envs.MAIL_FROM == None or
-        Envs.MAIL_PORT == None or
-        Envs.MAIL_SERVER == None or
-        Envs.BACKEND_HOST == None):
-        print("Environment variables not set.")
-        return False
-
-    amp_html = cont_get_html(template, session_id, form_id)
-
-    # https://www.appsloveworld.com/python/661/how-to-send-amp-email-from-python-how-is-it-technically-different-from-normal-em
-
+def cont_get_emails(session, template):
     host = Envs.BACKEND_HOST
-    if (host == "localhost" or host == "127.0.0.1"):
-        main = '<a href="http://{}/api/email/submit/{}/{}" target="_blank"><div class="button">Go to the survey!</div></a>'.format(host, session_id, form_id)
-    else:
-        main = '<a href="https://{}/api/email/submit/{}/{}" target="_blank"><div class="button">Go to the survey!</div></a>'.format(host, session_id, form_id)
 
-    fallback_html = head_fall + logo + main + footer_fall
+    htmls = []
 
+    emails = session.emails
+    forms = session.forms
+    for index, email in enumerate(emails):
+        form_id = forms[index].form_id
+        if (host == "localhost" or host == "127.0.0.1"):
+            main = '<a href="http://{}:8000/api/email/submit/{}/{}" target="_blank"><div class="button">Go to the survey!</div></a>'.format(host, session.id, form_id)
+        else:
+            main = '<a href="https://{}:8000/api/email/submit/{}/{}" target="_blank"><div class="button">Go to the survey!</div></a>'.format(host, session.id, form_id)
+
+        html_fall = head_fall + logo_fall + main + footer_fall
+        html_amp = cont_get_html(template, session.id, forms[index].form_id)
+
+        htmls.append({"amp": html_amp,"html": html_fall, "email": email})
+        
+    return htmls
+
+
+def cont_send_emails(background_tasks: BackgroundTasks, subject: str, emails):
     try:
-        #Important: Some email clients only render the last MIME part, so it is
-        #recommended to place the text/x-amp-html MIME part before the text/html.
-        message = MessageSchema(
-            subject=subject,
-            recipients=email_to,
-            body=amp_html,
-            subtype=MessageType.amp,
-            alternative_body=fallback_html,
-            multipart_subtype = MultipartSubtypeEnum.alternative
-        )    
-        fm = FastMail(conf)
-        background_tasks.add_task(fm.send_message, message)
+        for email in emails:
+            #Important: Some email clients only render the last MIME part, so it is
+            #recommended to place the text/x-amp-html MIME part before the text/html.
+            message = MessageSchema(
+                subject=subject,
+                recipients=[email["email"]],
+                body=email["amp"],
+                subtype=MessageType.amp,
+                alternative_body=email["html"],
+                multipart_subtype = MultipartSubtypeEnum.alternative
+            )    
+            fm = FastMail(conf)
+            background_tasks.add_task(fm.send_message, message)
+
         return True
+
     except:
         return False
+
+# def cont_send_emails(background_tasks: BackgroundTasks, subject: str, email_to: list[str], template, session_id: str):
+#
+#     if (Envs.MAIL_USERNAME == None or 
+#         Envs.MAIL_PASSWORD == None or
+#         Envs.MAIL_FROM == None or
+#         Envs.MAIL_PORT == None or
+#         Envs.MAIL_SERVER == None or
+#         Envs.BACKEND_HOST == None):
+#         print("Environment variables not set.")
+#         return False
+#
+#     amp_html = cont_get_html(template, session_id, form_id)
+#
+#     # https://www.appsloveworld.com/python/661/how-to-send-amp-email-from-python-how-is-it-technically-different-from-normal-em
+#
+#     host = Envs.BACKEND_HOST
+#     if (host == "localhost" or host == "127.0.0.1"):
+#         main = '<a href="http://{}/api/email/submit/{}/{}" target="_blank"><div class="button">Go to the survey!</div></a>'.format(host, session_id, form_id)
+#     else:
+#         main = '<a href="https://{}/api/email/submit/{}/{}" target="_blank"><div class="button">Go to the survey!</div></a>'.format(host, session_id, form_id)
+#
+#     fallback_html = head_fall + logo + main + footer_fall
+#
+#     try:
+#         #Important: Some email clients only render the last MIME part, so it is
+#         #recommended to place the text/x-amp-html MIME part before the text/html.
+#         message = MessageSchema(
+#             subject=subject,
+#             recipients=email_to,
+#             body=amp_html,
+#             subtype=MessageType.amp,
+#             alternative_body=fallback_html,
+#             multipart_subtype = MultipartSubtypeEnum.alternative
+#         )    
+#         fm = FastMail(conf)
+#         background_tasks.add_task(fm.send_message, message)
+#         return True
+#     except:
+#         return False
 
 
 def set_text_for_component(comp, text):
