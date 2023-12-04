@@ -27,7 +27,14 @@ async def cont_create_template(template: TemplateCreate, db: AsyncIOMotorClient 
     return template
 
 async def cont_update_template_by_id(id: str, request: TemplateUpdate, db: AsyncIOMotorClient = Depends(get_database)):
+    
+    ''' python 
+    # Set line filters out key-value pairs from the dictionary 
+    # returned by 'request.model_dump()' where the value (v) is not None.
+    # This action is to make sure that changes are only applied to changed fields of the data.
+    '''
     request = {k: v for k, v in request.model_dump().items() if v is not None}
+    
     update = await db_update_template_by_id(id, request, db)
     return update
 
