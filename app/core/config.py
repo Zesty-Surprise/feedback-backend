@@ -1,3 +1,9 @@
 database_name = "zesty"
 session_collection_name = "sessions"
 template_collection_name = "templates"
+user_collection_name = "users"
+secret_key = "eaa7b80f376218876a5d69af4534ac6943acf6c32087f47d929cea91a05d254c"
+algorithm= "HS256"
+access_token_expire_minutes = 30
+google_client_id = "84466759066-765slvimi0tssr5903idpp8u0rshs8li.apps.googleusercontent.com"
+google_client_secret = "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"
