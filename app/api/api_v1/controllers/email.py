@@ -31,8 +31,8 @@ conf = ConnectionConfig(
     MAIL_FROM=Envs.MAIL_FROM,
     MAIL_PORT=Envs.MAIL_PORT,
     MAIL_SERVER=Envs.MAIL_SERVER,
-    MAIL_STARTTLS = True,
-    MAIL_SSL_TLS = False,
+    MAIL_STARTTLS = False,
+    MAIL_SSL_TLS = True,
     USE_CREDENTIALS = True,
 )
 
@@ -84,10 +84,6 @@ def cont_get_emails(session, template):
 
 
 def cont_send_emails(background_tasks: BackgroundTasks, subject: str, emails):
-
-    print(Envs.MAIL_USERNAME)
-    print(Envs.MAIL_PASSWORD)
-
     try:
         for email in emails:
             #Important: Some email clients only render the last MIME part, so it is

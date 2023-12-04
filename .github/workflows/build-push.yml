@@ -46,6 +46,7 @@ jobs:
 
   build-and-push:
     needs: tests
+    name: Build & Push
     runs-on: ubuntu-latest
     # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
     permissions:
@@ -85,7 +86,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
   deploy:
     needs: build-and-push
-    name: deploy image
+    name: Deploy image
     runs-on: ubuntu-latest
 
     steps:

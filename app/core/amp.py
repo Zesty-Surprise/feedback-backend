@@ -110,11 +110,9 @@ logo = '''
 '''
 
 logo_fall = '''
-    <img alt="yoursuprise" src="https://s3-eu-west-1.amazonaws.com/tpd/logos/496768280000640005040244/0x0.png">
+    <img alt="yoursuprise" src="https://s3-eu-west-1.amazonaws.com/tpd/logos/496768280000640005040244/0x0.png" width="450em">
     </img>   
 '''
-
-
 
 
 head_fall = '''
