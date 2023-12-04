@@ -35,6 +35,7 @@ class SessionForm(BaseModel):
 
 
 class SessionShort(Session):
+    participants: int
     completed:int
     promoters:int
     passive:int
@@ -46,6 +47,11 @@ class SessionDatabase(Session):
     
 class SessionLong(Session):
     forms:List[SessionForm]
+
+    @computed_field(return_type=int)
+    @cached_property
+    def participants(self):
+        return len(self.emails)
 
     @computed_field(return_type=int)
     @cached_property
