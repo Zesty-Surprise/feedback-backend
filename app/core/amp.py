@@ -8,7 +8,7 @@ global department
 global question 
 
 head_amp = '''
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html amp4email data-css-strict lang="en">
   <head>
     <meta charset="utf-8" />
@@ -20,23 +20,27 @@ head_amp = '''
     ></script>
     <style amp4email-boilerplate></style>
     <style amp-custom>
-      p {
-        font-weight: bold;
-      }
-      body {
+      .window {
         background: #f5e5d3;
         font-family: "Montserrat", Arial, Helvetica, sans-serif;
         color: #595959;
+        display: flex;
+        justify-content: center;
+        margin:0;
       }
-      .container {
-        max-width: 420px;
-        margin: 50px auto;
+      .window-container {
+        margin-top:2%;
         background-color: #fcf8f4;
         padding: 20px 50px 50px 50px;
         border-radius: 10px;
-        box-shadow: 10px 10px 2px 2px #e6d5c3;
+        width:40%;
       }
-      .feedback-input {
+      .feedback-department {
+        appearance: none;
+        border: 2px solid #de896e;
+        border-radius: 10px;
+        background-color: #fcf8f4;
+        font-family: "Montserrat", Arial, Helvetica, sans-serif;
         font-weight: 500;
         font-size: 18px;
         line-height: 22px;
@@ -45,53 +49,38 @@ head_amp = '''
         width: 100%;
         box-sizing: border-box;
       }
-      textarea {
-        height: 150px;
-        line-height: 150%;
-        border-radius: 10px;
-        border-width: 2px;
-        border-color: #de896e;
-        background-color: #fcf8f4;
-        resize: none;
-      }
-      .radio-label {
-        display: inline-block;
-        vertical-align: top;
-        margin-top: 0.5%;
-        margin-right: 1.5%;
-      }
+      .numbers,
+		.slider {
+  			display: flex;
+  			justify-content: space-between;
+	  }
 
-      .feedback-input {
+      .numbers span,
+		.slider span {
+          width: 0;
+          flex-grow: 1;
+          text-align: center;
+	  }
+
+	  .slider span {
+  			flex-grow: 1;
+	  }
+
+      .slider input {
+        flex-grow: 24;
+        margin-left: -2px; 
+        margin-right: -2px;
+      }
+      textarea {
         appearance: none;
         border: 2px solid #de896e;
         background-color: #fcf8f4;
         font-family: "Montserrat", Arial, Helvetica, sans-serif;
-      }
-      .radio-input {
-        display: inline-block;
-        appearance: none;
-        border-radius: 50%;
-        width: 22px;
-        height: 22px;
-        border: 2px solid #de896e;
-        background-color: #fcf8f4;
-        margin-right: 3.3%;
-      }
-      .radio-label {
-        display: inline-block;
-        appearance: none;
-        border-radius: 50%;
-        width: 22px;
-        height: 22px;
-        margin-left: 9px;
-      }
-      .radio-input:checked {
-        border: 6px solid #96533f;
-      }
-      .enps {
+        height: 80px;
+        width:98%;
         border-radius: 10px;
-        border-width: 10px;
-        margin: auto;
+        background-color: #fcf8f4;
+        resize: none;
       }
       .submit {
         margin-top: 3%;
@@ -104,34 +93,19 @@ head_amp = '''
         background-color: #595959;
         padding: 10px;
       }
-      img{
-        margin-bottom: 5%;
-      }
-      h1{
-       font-size: 65px;
-      }
     </style>
   </head>
 
-  <body>
-    <div class="container">      
+  <body class="window">
+    <div class="window-container">        
       '''
 
-# logo = '''
-# <amp-img
-#   alt="A view of the sea"
-#   src="https://assets.yoursurprise.com/images/template/logo-yoursurprise-2023.svg"
-#   width="700"
-#   height="250"
-#   layout="responsive"
-# >
-# </amp-img>
-# '''
-
-
 logo = '''
-<h1>YourSurprise</h1>
+    <amp-img alt="yoursuprise" src="https://s3-eu-west-1.amazonaws.com/tpd/logos/496768280000640005040244/0x0.png" width="50" height="10" layout="responsive">
+    </amp-img>   
 '''
+
+
 
 
 head_fall = '''
@@ -264,36 +238,25 @@ footer_fall = '''
 '''
 
 enps = '''
-     <p class="text">{}</p>
-        <div class="enps">
-          <input class="radio-input" type="radio" name="score" value="1" />
-          <input class="radio-input" type="radio" name="score" value="2" />
-          <input class="radio-input" type="radio" name="score" value="3" />
-          <input class="radio-input" type="radio" name="score" value="4" />
-          <input class="radio-input" type="radio" name="score" value="5" />
-          <input class="radio-input" type="radio" name="score" value="6" />
-          <input class="radio-input" type="radio" name="score" value="7" />
-          <input class="radio-input" type="radio" name="score" value="8" />
-          <input class="radio-input" type="radio" name="score" value="9" />
-          <input class="radio-input" type="radio" name="score" value="10" />
+     <p>{}</p>
+     <div class="enps">
+        <div class="numbers">
+          <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
         </div>
-        <div class="enps">
-        <label for="input" class="radio-label">1</label>
-        <label for="input" class="radio-label">2</label>
-        <label for="input" class="radio-label">3</label>
-        <label for="input" class="radio-label">4</label>
-        <label for="input" class="radio-label">5</label>
-        <label for="input" class="radio-label">6</label>
-        <label for="input" class="radio-label">7</label>
-        <label for="input" class="radio-label">8</label>
-        <label for="input" class="radio-label">9</label>
-        <label for="input" class="radio-label">10</label>
-      </div>
+        <div class="slider">
+          <span>
+          </span>
+          <input type="range" min="0" max="10" name="score" value="5"/>
+          <span>
+          </span>
+        </div>
+    </div>
+
 '''
 
 department = '''
     <p class="text">{}</p>
-        <select id="roles" name="dep" class="feedback-input">
+        <select id="roles" name="dep" class="feedback-department">
           <option value="Customer Service">
             <label>Customer Service</label>
           </option>
@@ -310,5 +273,5 @@ department = '''
 
 question = '''
     <p class="text">{}</p>
-    <textarea name="custom{}" class="feedback-input"></textarea>
+    <textarea name="custom{}"></textarea>
 '''
