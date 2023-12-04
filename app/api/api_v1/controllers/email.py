@@ -31,9 +31,9 @@ conf = ConnectionConfig(
     MAIL_FROM=Envs.MAIL_FROM,
     MAIL_PORT=Envs.MAIL_PORT,
     MAIL_SERVER=Envs.MAIL_SERVER,
-    MAIL_STARTTLS = False,
-    MAIL_SSL_TLS = True,
-    USE_CREDENTIALS=True,
+    MAIL_STARTTLS = True,
+    MAIL_SSL_TLS = False,
+    USE_CREDENTIALS = True,
 )
 
 def cont_get_html(template, session_id: str, form_id: str):
@@ -84,6 +84,10 @@ def cont_get_emails(session, template):
 
 
 def cont_send_emails(background_tasks: BackgroundTasks, subject: str, emails):
+
+    print(Envs.MAIL_USERNAME)
+    print(Envs.MAIL_PASSWORD)
+
     try:
         for email in emails:
             #Important: Some email clients only render the last MIME part, so it is
@@ -103,46 +107,6 @@ def cont_send_emails(background_tasks: BackgroundTasks, subject: str, emails):
 
     except:
         return False
-
-# def cont_send_emails(background_tasks: BackgroundTasks, subject: str, email_to: list[str], template, session_id: str):
-#
-#     if (Envs.MAIL_USERNAME == None or 
-#         Envs.MAIL_PASSWORD == None or
-#         Envs.MAIL_FROM == None or
-#         Envs.MAIL_PORT == None or
-#         Envs.MAIL_SERVER == None or
-#         Envs.BACKEND_HOST == None):
-#         print("Environment variables not set.")
-#         return False
-#
-#     amp_html = cont_get_html(template, session_id, form_id)
-#
-#     # https://www.appsloveworld.com/python/661/how-to-send-amp-email-from-python-how-is-it-technically-different-from-normal-em
-#
-#     host = Envs.BACKEND_HOST
-#     if (host == "localhost" or host == "127.0.0.1"):
-#         main = '<a href="http://{}/api/email/submit/{}/{}" target="_blank"><div class="button">Go to the survey!</div></a>'.format(host, session_id, form_id)
-#     else:
-#         main = '<a href="https://{}/api/email/submit/{}/{}" target="_blank"><div class="button">Go to the survey!</div></a>'.format(host, session_id, form_id)
-#
-#     fallback_html = head_fall + logo + main + footer_fall
-#
-#     try:
-#         #Important: Some email clients only render the last MIME part, so it is
-#         #recommended to place the text/x-amp-html MIME part before the text/html.
-#         message = MessageSchema(
-#             subject=subject,
-#             recipients=email_to,
-#             body=amp_html,
-#             subtype=MessageType.amp,
-#             alternative_body=fallback_html,
-#             multipart_subtype = MultipartSubtypeEnum.alternative
-#         )    
-#         fm = FastMail(conf)
-#         background_tasks.add_task(fm.send_message, message)
-#         return True
-#     except:
-#         return False
 
 
 def set_text_for_component(comp, text):
