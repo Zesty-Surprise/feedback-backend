@@ -14,7 +14,6 @@ class Session(BaseModel):
     date_updated: Optional[datetime] = None
     emails: List[str]
     template: str
-    form_count:int
 
     class Config:
         from_attributes = True
@@ -27,7 +26,7 @@ class FormCustomComponent(BaseModel):
     custom: str
 
 class SessionForm(BaseModel):
-    form_id: int
+    form_id: str
     completed: bool
     score: Optional[int] = None 
     department: Optional[str] = None

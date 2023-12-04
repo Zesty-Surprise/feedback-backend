@@ -16,7 +16,7 @@ async def cont_get_forms(id: str, db:AsyncIOMotorClient):
     forms = session["forms"]
     return forms
 
-async def cont_get_forms_by_id(form_id:int, session_id:str, db:AsyncIOMotorClient):
+async def cont_get_forms_by_id(form_id:str, session_id:str, db:AsyncIOMotorClient):
     session = await db_get_session_by_id(session_id, db)
     selected_form : SessionForm = {}
     for form in session["forms"]:
@@ -24,7 +24,7 @@ async def cont_get_forms_by_id(form_id:int, session_id:str, db:AsyncIOMotorClien
             selected_form = form
     return selected_form
 
-async def cont_update_forms_by_id(score: int, dep: str, form_id:int, session_id:str, db:AsyncIOMotorClient, custom: List[FormCustomComponent] = None):
+async def cont_update_forms_by_id(score: int, dep: str, form_id:str, session_id:str, db:AsyncIOMotorClient, custom: List[FormCustomComponent] = None):
     form = await cont_get_forms_by_id(form_id, session_id, db)
     if form["completed"]:
         return

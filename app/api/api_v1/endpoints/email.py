@@ -13,7 +13,8 @@ from ..controllers.template import (
 )
 from ..controllers.email import (
     cont_get_html,
-    cont_send_email,
+    cont_send_emails,
+    cont_get_emails,
     cont_html_assemble
 )
 
@@ -23,8 +24,7 @@ router = APIRouter(tags=["Email"])
 @router.get("/email/submit/{session_id}/{form_id}")
 async def complete_form(
     session_id:str, 
-    form_id:int, 
-    current_user: Annotated[User, Depends(get_current_user)],
+    form_id:str, 
     db: AsyncIOMotorClient = Depends(get_database)
 ):
     session = await cont_get_session_by_id(session_id, db)
@@ -44,11 +44,10 @@ async def get_preview_template(
     html = cont_html_assemble(template, "")
     return html
 
-@router.get("/email/send", status_code=200)
+@router.get("/email/send/{session_id}", status_code=200)
 async def get_send_email(
     background_tasks: BackgroundTasks, 
     session_id:str, 
-    form_id:int, 
     current_user: Annotated[User, Depends(get_current_user)],
     db: AsyncIOMotorClient = Depends(get_database)
 ):
@@ -61,8 +60,8 @@ async def get_send_email(
     session = await cont_get_session_by_id(session_id, db)
     template_id = session.template
     template = await cont_get_template_by_id(template_id, db)
-
-    success = cont_send_email(background_tasks, "TEST - Feedback form", session.emails, template, session_id, form_id)
+    emails = cont_get_emails(session, template)
+    success = cont_send_emails(background_tasks, "TEST - Feedback form", emails)
 
     if success: 
         return {"message": "Successfully sent email(s)."}

@@ -22,8 +22,7 @@ router = APIRouter(tags=["Forms"])
 async def complete_form(
     request: Request, 
     session_id:str, 
-    form_id:int, 
-    current_user: Annotated[User, Depends(get_current_user)],
+    form_id:str, 
     score: int = Query(..., description="A required fixed parameter"), 
     dep: str = Query(..., description="A required fixed parameter"), 
     db: AsyncIOMotorClient = Depends(get_database),
