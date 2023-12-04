@@ -16,3 +16,4 @@ pydantic_settings==2.1.0
 pydantic==2.5.2
 email-validator==2.1.0.post1
 blinker==1.7.0
+httpx==0.25.2
