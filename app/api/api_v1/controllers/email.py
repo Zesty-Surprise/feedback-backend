@@ -41,7 +41,7 @@ def cont_get_html(template, session_id: str, form_id: str):
     if (host == "localhost" or host == "127.0.0.1"):
         form_url = '<form action-xhr="http://{}:8000/api/file/{}/{}" method="get" id="ic-form">'.format(host, session_id, form_id)
     else:
-        form_url = '<form action-xhr="https://{}:8000/api/file/{}/{}" method="get" id="ic-form">'.format(host, session_id, form_id)
+        form_url = '<form action-xhr="https://{}/api/file/{}/{}" method="get" id="ic-form">'.format(host, session_id, form_id)
     
     html = cont_html_assemble(template=template, form_url=form_url)
     
@@ -73,7 +73,7 @@ def cont_get_emails(session, template):
         if (host == "localhost" or host == "127.0.0.1"):
             main = '<a href="http://{}:8000/api/email/submit/{}/{}" target="_blank"><div class="button">Go to the survey!</div></a>'.format(host, session.id, form_id)
         else:
-            main = '<a href="https://{}:8000/api/email/submit/{}/{}" target="_blank"><div class="button">Go to the survey!</div></a>'.format(host, session.id, form_id)
+            main = '<a href="https://{}/api/email/submit/{}/{}" target="_blank"><div class="button">Go to the survey!</div></a>'.format(host, session.id, form_id)
 
         html_fall = head_fall + logo_fall + main + footer_fall
         html_amp = cont_get_html(template, session.id, forms[index].form_id)

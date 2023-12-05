@@ -96,6 +96,6 @@ jobs:
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
     - name: connect and pull
-      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd feedback-project && docker compose -f compose-full.yml -p app down --volumes && docker compose -f compose-full.yml -p app up --force-recreate --pull=always -d && exit"
+      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "./start.sh && exit"
     - name: cleanup
       run: rm -rf ~/.ssh
