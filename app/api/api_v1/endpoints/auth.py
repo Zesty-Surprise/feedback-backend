@@ -75,3 +75,7 @@ async def google_auth(request: Request, db: AsyncIOMotorClient = Depends(get_dat
     if await valid_email_from_db(user_data["email"], db):
         return {"access_token": create_token(user_data["email"]), "token_type": "bearer"}
     raise CREDENTIALS_EXCEPTION
+
+@router.get('/token/valid')
+async def is_valid_token(current_user: Annotated[User, Depends(get_current_user)]):
+    return {"logged_in" : True}
