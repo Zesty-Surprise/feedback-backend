@@ -37,13 +37,13 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
+        expire = datetime.utcnow() + timedelta(minutes=60)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, secret_key, algorithm=algorithm)
     return encoded_jwt
 
 def create_token(email):
-    access_token_expires = timedelta(minutes=15)
+    access_token_expires = timedelta(minutes=60)
     access_token = create_access_token(data={'sub': email}, expires_delta=access_token_expires)
     return access_token
 
