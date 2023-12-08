@@ -16,6 +16,7 @@ origins = [
     "https://test.axelzublena.com",
     "https://amp.test.axelzublena.com",
     "https://front.test.axelzublena.com",
+    "https://mail.google.com",
 ]
 
 app.add_middleware(
