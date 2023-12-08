@@ -1,4 +1,6 @@
 from typing import Annotated
+from app.models.session import SessionUpdate
+from app.repository.session import db_update_session_by_id
 
 from fastapi import APIRouter, Depends, BackgroundTasks 
 from fastapi.responses import HTMLResponse
@@ -6,7 +8,8 @@ from ....db.mongodb import AsyncIOMotorClient, get_database
 from ..controllers.auth import get_current_user
 
 from ..controllers.session import (
-    cont_get_session_by_id
+    cont_get_session_by_id,
+    cont_update_session_by_id
 )
 from ..controllers.template import (
     cont_get_template_by_id
@@ -61,9 +64,12 @@ async def get_send_email(
     template_id = session.template
     template = await cont_get_template_by_id(template_id, db)
     emails = cont_get_emails(session, template)
-    success = cont_send_emails(background_tasks, "TEST - Feedback form", emails)
+    success = cont_send_emails(background_tasks, session.title , emails)
+
+    session_update = SessionUpdate.model_construct(deployed=True)
 
     if success: 
+        await cont_update_session_by_id(session_id, session_update, db)
         return {"message": "Successfully sent email(s)."}
     
     return {"message": "Failled to send email(s)."}

@@ -14,6 +14,7 @@ class Session(BaseModel):
     date_updated: Optional[datetime] = None
     emails: List[str]
     template: str
+    deployed: bool
 
     class Config:
         from_attributes = True
@@ -110,6 +111,7 @@ class SessionCreate(BaseModel):
     date_created: datetime = Field(default_factory=datetime_now)
     date_updated: Optional[datetime] = None
     forms:Optional[List[SessionForm]] = None
+    deployed: bool
     
     class Config:
         from_attributes = True
@@ -132,6 +134,7 @@ class SessionUpdate(BaseModel):
     template: Optional[str] = None
     forms: List[SessionForm] = None
     date_updated: datetime = Field(default_factory=datetime_now)
+    deployed: Optional[bool] = None
 
     class Config:
         from_attributes = True
