@@ -18,8 +18,8 @@ class User(BaseModel):
         arbitrary_types_allowed=True
         json_schema_extra = {
             "example": {
-                "username": "zesty",
-                "email": "zesty@gmail.com",
+                "username": "admin",
+                "email": "admin@example.com",
                 "password":"Password123!",
             }
         }

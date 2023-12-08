@@ -18,6 +18,9 @@ head_amp = '''
       custom-element="amp-form"
       src="https://cdn.ampproject.org/v0/amp-form-0.1.js"
     ></script>
+    <script custom-template="amp-mustache"
+      src="https://cdn.ampproject.org/v0/amp-mustache-0.2.js" async
+    ></script>
     <style amp4email-boilerplate></style>
     <style amp-custom>
       .window {
@@ -96,6 +99,16 @@ head_amp = '''
       .submit:hover {
         background-color: #de896e;
         cursor: pointer;
+      }
+      .error{
+        color: red;
+        padding-top: 15px;
+		text-align: center;
+      }
+      .success{
+        color: green;
+        padding-top: 15px;
+		text-align: center;
       }
     </style>
   </head>
@@ -234,7 +247,17 @@ head_fall = '''
     '''
 
 footer_amp = '''
-            <input type="submit" value="SUBMIT" class="submit" />
+        <input type="submit" value="SUBMIT" class="submit" />
+        <div submit-success class="success">
+          <template type="amp-mustache">
+            Survey submitted!
+          </template>
+        </div>
+        <div submit-error class="error">
+          <template type="amp-mustache">
+            The submission failed.. Did you already send it?
+          </template>
+        </div>
       </form>
     </div>
   </body>

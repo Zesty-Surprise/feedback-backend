@@ -1,5 +1,5 @@
 template = {
-  "name": "DEMO",
+  "name": "Simple eNPS Form",
   "components": [
     {
       "id": 0,
@@ -22,12 +22,13 @@ template = {
 }
 
 session = {
-   "title":"Seeded Durvey",
+   "title":"March eNPS Survey",
    "emails":[
       "bobpanda.bp@gmail.com"
    ],
    "date_created":"2023-11-14T13:26:06.876397Z",
    "date_updated":None,
+   "deployed": True,
    "forms":[
       {
          "form_id":"xjxfzoyn",

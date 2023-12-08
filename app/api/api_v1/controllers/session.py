@@ -51,7 +51,8 @@ async def cont_create_session(session: SessionCreate, db: AsyncIOMotorClient):
             "score":None,
             "department":None,
             "date_completed":None,
-            "custom":None
+            "custom":None,
+            "deployed":True
         }
         session["forms"].append(new_form)
     session = await db_create_session(session, db)
