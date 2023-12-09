@@ -1,5 +1,5 @@
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse 
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from app.db.mongodb_utils import connect_to_mongo, close_mongo_connection
@@ -7,6 +7,12 @@ from app.api.api_v1.api import router as api_router
 from .core.config import secret_key
 
 app = FastAPI()
+
+@app.middleware("http")
+async def amp_middelware(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["AMP-Email-Allow-Sender"] = "*"
+    return response
 
 origins = [
     "http://localhost:5173",
