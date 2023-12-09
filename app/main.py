@@ -24,7 +24,6 @@ origins = [
 async def amp_middelware(request: Request, call_next):
     response = await call_next(request)
     response.headers["AMP-Email-Allow-Sender"] = "*"
-    response.headers['Access-Control-Allow-Origin'] = origins
     response.headers['Access-Control-Expose-Headers'] = 'AMP-Access-Control-Allow-Source-Origin'
     response.headers['AMP-Access-Control-Allow-Source-Origin'] = "amp@gmail.dev"
     return response
