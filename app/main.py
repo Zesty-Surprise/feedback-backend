@@ -8,15 +8,6 @@ from .core.config import secret_key
 
 app = FastAPI()
 
-@app.middleware("http")
-async def amp_middelware(request: Request, call_next):
-    response = await call_next(request)
-    response.headers["AMP-Email-Allow-Sender"] = "*"
-    response.headers['Access-Control-Allow-Origin'] = "*"
-    response.headers['Access-Control-Expose-Headers'] = 'AMP-Access-Control-Allow-Source-Origin'
-    response.headers['AMP-Access-Control-Allow-Source-Origin'] = "*"
-    return response
-
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
@@ -26,7 +17,18 @@ origins = [
     "https://amp.test.axelzublena.com",
     "https://front.test.axelzublena.com",
     "https://mail.google.com",
+    "amp@gmail.dev",
 ]
+
+@app.middleware("http")
+async def amp_middelware(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["AMP-Email-Allow-Sender"] = "*"
+    response.headers['Access-Control-Allow-Origin'] = origins
+    response.headers['Access-Control-Expose-Headers'] = 'AMP-Access-Control-Allow-Source-Origin'
+    response.headers['AMP-Access-Control-Allow-Source-Origin'] = "amp@gmail.dev"
+    return response
+
 
 app.add_middleware(
     CORSMiddleware,
