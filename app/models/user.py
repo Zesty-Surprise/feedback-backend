@@ -11,6 +11,7 @@ class User(BaseModel):
     password: str 
     date_created: datetime = Field(default_factory=datetime_now)
     date_updated: Optional[datetime] = None
+    role: str
 
     class Config:
         from_attributes = True
@@ -18,8 +19,21 @@ class User(BaseModel):
         arbitrary_types_allowed=True
         json_schema_extra = {
             "example": {
-                "username": "admin",
-                "email": "admin@example.com",
+                "username": "sample",
+                "email": "sample@example.com",
                 "password":"Password123!",
+                "role":"admin or IT or Gifts..."
             }
         }
+
+class ReadUser(BaseModel):
+    username: str
+    email: str
+    date_created: datetime = Field(default_factory=datetime_now)
+    date_updated: Optional[datetime] = None
+    role: str
+
+    class Config:
+        from_attributes = True
+        populate_by_name = True
+        arbitrary_types_allowed=True

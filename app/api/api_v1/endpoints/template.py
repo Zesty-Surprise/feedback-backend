@@ -16,13 +16,16 @@ from app.models.template import (
     TemplateCreate,
     TemplateUpdate
 )
+
+from app.models.permissions import PermissionChecker
 from ....models.user import User
 
 router = APIRouter(tags=["Template"])
 
 @router.get("/templates")
 async def get_all_templates(
-    current_user: Annotated[User, Depends(get_current_user)],
+    # current_user: Annotated[User, Depends(get_current_user)],
+    authorized: bool = Depends(PermissionChecker(required_permissions=["template:read"])),
     db: AsyncIOMotorClient = Depends(get_database)
 ):
     templates = await cont_get_templates(db)
@@ -31,7 +34,7 @@ async def get_all_templates(
 @router.get("/templates/{id}", response_model=Template)
 async def get_template(
     id: str, 
-    current_user: Annotated[User, Depends(get_current_user)],
+    authorized: bool = Depends(PermissionChecker(required_permissions=["template:read"])),
     db: AsyncIOMotorClient = Depends(get_database)
 ):
     template = await cont_get_template_by_id(id, db)
@@ -42,7 +45,7 @@ async def get_template(
 @router.post("/templates", response_model=Template)
 async def create_template(
     template: TemplateCreate, 
-    current_user: Annotated[User, Depends(get_current_user)],
+    authorized: bool = Depends(PermissionChecker(required_permissions=["template:write"])),
     db: AsyncIOMotorClient = Depends(get_database)
 ):
     template = await cont_create_template(template, db)
@@ -54,7 +57,7 @@ async def create_template(
 async def update_template(
     id: str, 
     request: TemplateUpdate, 
-    current_user: Annotated[User, Depends(get_current_user)],
+    authorized: bool = Depends(PermissionChecker(required_permissions=["template:write"])),
     db: AsyncIOMotorClient = Depends(get_database)
 ):
     update = await cont_update_template_by_id(id, request, db)
@@ -65,7 +68,7 @@ async def update_template(
 @router.delete("/templates/{id}")
 async def delete_template(
     id: str, 
-    current_user: Annotated[User, Depends(get_current_user)],
+    authorized: bool = Depends(PermissionChecker(required_permissions=["template:write"])),
     db: AsyncIOMotorClient = Depends(get_database)
 ):
     delete = await cont_delete_template_by_id(id, db)
