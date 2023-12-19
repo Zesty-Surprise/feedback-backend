@@ -9,7 +9,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from ....core.config import algorithm, secret_key
 from ....db.mongodb import AsyncIOMotorClient, get_database
-from ....repository.user import db_create_user, db_get_user_by_username, db_get_user_by_email
+from ....repository.user import db_create_user, db_delete_user, db_get_all_users, db_get_user_by_username, db_get_user_by_email
 
 from ....models.user import  User
 from ....models.token import TokenData
@@ -71,6 +71,23 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)],db: Asy
     return user
 
 async def cont_create_user(user: User, db: AsyncIOMotorClient):
+
+    check = await db_get_user_by_email(db, user.email)
+    if check is not None:
+        raise HTTPException(
+            409,
+            detail="Email taken"
+        )
+
     user = jsonable_encoder(user)
     user = await db_create_user(user, db)
     return user
+
+async def cont_get_all_users(db: AsyncIOMotorClient):
+    users = await db_get_all_users(db)
+    return users
+
+async def cont_delete_user_by_email(email:str, db:AsyncIOMotorClient):
+    delete = await db_delete_user(email, db)
+    return delete
+

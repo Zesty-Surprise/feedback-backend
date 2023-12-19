@@ -1,4 +1,5 @@
 from typing import Annotated
+from app.models.permissions import PermissionChecker
 from app.models.session import SessionUpdate
 from app.repository.session import db_update_session_by_id
 
@@ -40,7 +41,7 @@ async def complete_form(
 @router.get("/email/{template_id}", response_class=HTMLResponse)
 async def get_preview_template(
     template_id:str, 
-    current_user: Annotated[User, Depends(get_current_user)],
+    authorized: bool = Depends(PermissionChecker(required_permissions=["email:read"])),
     db: AsyncIOMotorClient = Depends(get_database)
 ):
     template = await cont_get_template_by_id(template_id,db)
@@ -51,7 +52,7 @@ async def get_preview_template(
 async def get_send_email(
     background_tasks: BackgroundTasks, 
     session_id:str, 
-    current_user: Annotated[User, Depends(get_current_user)],
+    authorized: bool = Depends(PermissionChecker(required_permissions=["email:read"])),
     db: AsyncIOMotorClient = Depends(get_database)
 ):
     # 1. Get session information
