@@ -4,7 +4,7 @@ from authlib.integrations.starlette_client import OAuth, OAuthError
 from fastapi import APIRouter, Depends, HTTPException, Request, status, Query
 from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
-from ....core.config import  google_client_id, google_client_secret, secret_key
+from ....core.config import  google_client_id, google_client_secret
 from ....db.mongodb import AsyncIOMotorClient, get_database
 from ..controllers.auth import authenticate_user, get_current_user, cont_create_user, create_token, valid_email_from_db
 

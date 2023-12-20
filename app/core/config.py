@@ -1,4 +1,5 @@
 database_name = "zesty"
+testing_database_name = "testing"
 session_collection_name = "sessions"
 template_collection_name = "templates"
 user_collection_name = "users"
