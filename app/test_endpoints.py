@@ -7,12 +7,14 @@ from app.main import app
 from app.db.mongodb_utils import db
 from app.db.mongodb import get_database, get_testing_database
 from app.api.api_v1.controllers.auth import get_current_user
+from app.models.permissions import PermissionChecker
 from app.models.user import User
 
 
-async def get_testing_user_for_test() -> User:
+def get_testing_user_for_test() -> User:
     # Return a mock user for testing purposes
-    return User(username="test_user", email="test@example.com", password="Password123!")
+    user = User(username="test_user", email="test@example.com", password="Password123!", role="admin")
+    return user.model_dump()
 
 client = TestClient(app)
 
@@ -26,7 +28,7 @@ app.dependency_overrides[get_database] = get_testing_database
 app.dependency_overrides[get_current_user] = get_testing_user_for_test
 
 def test_post_user(set_db):
-    data = {"email": "admin@example.com","password": "Password123!","username": "admin"}
+    data = {"email": "admin@example.com","password": "Password123!","role": "admin", "username": "admin"}
     response = client.post("/api/users", json=data)
     assert response.status_code == 200 
     assert response.json()["email"] == "admin@example.com"
