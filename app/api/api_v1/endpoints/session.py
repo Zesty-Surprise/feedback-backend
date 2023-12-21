@@ -1,6 +1,8 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
+
+from app.models.permissions import PermissionChecker
 from ....db.mongodb import AsyncIOMotorClient, get_database
 from ..controllers.auth import get_current_user
 
@@ -17,29 +19,35 @@ from app.models.session import (
     SessionUpdate,
     Session
 )
-from ....models.user import User
 
 router = APIRouter(tags=["Sessions"])
 
 @router.get("/sessions")
 async def get_all_sessions(
-    current_user: Annotated[User, Depends(get_current_user)],
+    authorized: any = Depends(PermissionChecker(required_permissions=["sessions:read"])),
     db: AsyncIOMotorClient = Depends(get_database), 
     dep: str = None, 
     short: bool = None
-):
-    sessions = await cont_get_sessions(db, dep, short)
+):  
+    if authorized['filter'] != None:
+        sessions = await cont_get_sessions(db, authorized["filter"], short)
+    else:
+        sessions = await cont_get_sessions(db, dep, short)
     return sessions
 
 @router.get("/sessions/{id}")
 async def get_session(
     id: str, 
-    current_user: Annotated[User, Depends(get_current_user)],
+    authorized: bool = Depends(PermissionChecker(required_permissions=["sessions:read"])),
     db: AsyncIOMotorClient = Depends(get_database), 
     dep: str = None, 
     short: bool = None
-):
-    session = await cont_get_session_by_id(id, db, dep, short)
+):  
+    if authorized['filter'] != None:
+        session = await cont_get_session_by_id(id, db, authorized["filter"], short)
+    else:
+        session = await cont_get_session_by_id(id, db, dep, short)
+
     if session:
         return session
     raise HTTPException(404, f"sessions {id} not found")
@@ -47,7 +55,7 @@ async def get_session(
 @router.post("/sessions", response_model=Session)
 async def add_session(
     session: SessionCreate,    
-    current_user: Annotated[User, Depends(get_current_user)],
+    authorized: bool = Depends(PermissionChecker(required_permissions=["sessions:write"])),
     db: AsyncIOMotorClient = Depends(get_database)
 ):
     session = await cont_create_session(session, db)  
@@ -59,7 +67,7 @@ async def add_session(
 async def update_session(
     id: str, 
     request: SessionUpdate, 
-    current_user: Annotated[User, Depends(get_current_user)],
+    authorized: bool = Depends(PermissionChecker(required_permissions=["sessions:write"])),
     db: AsyncIOMotorClient = Depends(get_database)
 ):
     update =  await cont_update_session_by_id(id, request, db)
@@ -70,7 +78,7 @@ async def update_session(
 @router.delete("/sessions/{id}")
 async def delete_session(
     id: str, 
-    current_user: Annotated[User, Depends(get_current_user)],
+    authorized: bool = Depends(PermissionChecker(required_permissions=["sessions:write"])),
     db: AsyncIOMotorClient = Depends(get_database)
 ):
     delete = await cont_delete_session_by_id(id, db)

@@ -4,9 +4,11 @@ from authlib.integrations.starlette_client import OAuth, OAuthError
 from fastapi import APIRouter, Depends, HTTPException, Request, status, Query
 from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
-from ....core.config import  google_client_id, google_client_secret
+from app.models.permissions import PermissionChecker
+from app.repository.user import db_get_all_users
+from ....core.config import  google_client_id, google_client_secret, secret_key
 from ....db.mongodb import AsyncIOMotorClient, get_database
-from ..controllers.auth import authenticate_user, get_current_user, cont_create_user, create_token, valid_email_from_db
+from ..controllers.auth import authenticate_user, get_current_user, cont_create_user, create_token, valid_email_from_db, cont_get_all_users, cont_delete_user_by_email
 
 from ....models.token import Token
 from ....models.user import User
@@ -35,7 +37,10 @@ CREDENTIALS_EXCEPTION = HTTPException(
 )
 
 @router.post("/users", response_model=User)
-async def add_user(user: User, db: AsyncIOMotorClient = Depends(get_database)):
+async def add_user(user: User, 
+                   db: AsyncIOMotorClient = Depends(get_database), 
+                   authorized: any = Depends(PermissionChecker(required_permissions=["auth:write"]))
+    ):
     user = await cont_create_user(user, db)    
     if user:
         return user
@@ -54,28 +59,45 @@ async def login_for_access_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token = create_token(user["username"])
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "bearer"  }
+
+@router.get('/users')
+async def get_users(db: AsyncIOMotorClient = Depends(get_database), 
+                   authorized: any = Depends(PermissionChecker(required_permissions=["auth:read"]))               
+    ):
+    users = await cont_get_all_users(db)
+    return users
+
+@router.delete('/users/{email}')
+async def delete_user_by_email(email: str, db: AsyncIOMotorClient = Depends(get_database), 
+                   authorized: any = Depends(PermissionChecker(required_permissions=["auth:read"]))
+    ):
+    delete = await cont_delete_user_by_email(email,db)
+    if delete:
+        return {"msg":f"deleted email with id:{id}"}
+    raise HTTPException(404, f"email {id} not found")
+    
 
 # Google Authentication
-@router.get('/login')
-async def google_login(request: Request):
-    google = oauth.create_client('google')
-    redirect_uri = "http://localhost:5173/auth/google_login"
-    return await google.authorize_redirect(request, redirect_uri)
+# @router.get('/login')
+# async def google_login(request: Request):
+#     google = oauth.create_client('google')
+#     redirect_uri = "http://localhost:5173/auth/google_login"
+#     return await google.authorize_redirect(request, redirect_uri)
 
-@router.get('/token', name="token")
-async def google_auth(request: Request, db: AsyncIOMotorClient = Depends(get_database)):
-    google = oauth.create_client('google')
-    try:
-        access_token = await google.authorize_access_token(request)
-    except OAuthError as e:
-        logging.error(f"OAuthError: {e}")
-        raise CREDENTIALS_EXCEPTION
-    user_data = access_token['userinfo']
-    if await valid_email_from_db(user_data["email"], db):
-        return {"access_token": create_token(user_data["email"]), "token_type": "bearer"}
-    raise CREDENTIALS_EXCEPTION
+# @router.get('/token', name="token")
+# async def google_auth(request: Request, db: AsyncIOMotorClient = Depends(get_database)):
+#     google = oauth.create_client('google')
+#     try:
+#         access_token = await google.authorize_access_token(request)
+#     except OAuthError as e:
+#         logging.error(f"OAuthError: {e}")
+#         raise CREDENTIALS_EXCEPTION
+#     user_data = access_token['userinfo']
+#     if await valid_email_from_db(user_data["email"], db):
+#         return {"access_token": create_token(user_data["email"]), "token_type": "bearer"}
+#     raise CREDENTIALS_EXCEPTION
 
 @router.get('/token/valid')
-async def is_valid_token(current_user: Annotated[User, Depends(get_current_user)]):
-    return {"logged_in" : True}
+async def is_user_valid(authorized: any = Depends(PermissionChecker(required_permissions=["sessions:read"]))):
+    return authorized

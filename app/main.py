@@ -1,10 +1,14 @@
-from fastapi import FastAPI, Request
+from fastapi import Depends, FastAPI, Request
 from fastapi.responses import HTMLResponse 
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from app.db.mongodb_utils import connect_to_mongo, close_mongo_connection
 from app.api.api_v1.api import router as api_router
 from .core.config import secret_key
+
+from app.repository.user import create_admin_user, db_get_user_by_username
+from app.db.mongodb import AsyncIOMotorClient, get_database
+
 
 app = FastAPI()
 
@@ -43,6 +47,13 @@ app.add_event_handler("startup", connect_to_mongo)
 app.add_event_handler("shutdown", close_mongo_connection)
 
 app.include_router(api_router, prefix="/api")
+
+@app.on_event('startup')
+async def populate_admin():
+    db : AsyncIOMotorClient = await get_database()
+    admin = await db_get_user_by_username(db, "admin")
+    if admin is None:
+        await create_admin_user(db)
 
 @app.get("/")
 async def root():
