@@ -26,7 +26,7 @@ class Session(BaseModel):
     date_updated: Optional[datetime] = None
     emails: List[str]
     template: str
-    form_count:int
+    form_count: Optional[int] = None
     forms:Optional[List[SessionForm]] = None
     deployed: bool
     
