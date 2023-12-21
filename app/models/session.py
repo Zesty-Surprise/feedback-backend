@@ -7,21 +7,6 @@ from app.core.objectID import PyObjectId
 def datetime_now():
     return datetime.now(timezone.utc)
 
-class Session(BaseModel):
-    id: PyObjectId = Field(alias="_id")
-    title: str
-    date_created: Optional[datetime] = None
-    date_updated: Optional[datetime] = None
-    emails: List[str]
-    template: str
-    deployed: bool
-
-    class Config:
-        from_attributes = True
-        populate_by_name = True
-        arbitrary_types_allowed=True
-        json_encoders = {PyObjectId: str}
-
 class FormCustomComponent(BaseModel):
     id: int
     custom: str
@@ -34,6 +19,22 @@ class SessionForm(BaseModel):
     date_completed: Optional[datetime] = None
     custom: Optional[List[FormCustomComponent]] = None
 
+class Session(BaseModel):
+    id: PyObjectId = Field(alias="_id")
+    title: str
+    date_created: Optional[datetime] = None
+    date_updated: Optional[datetime] = None
+    emails: List[str]
+    template: str
+    form_count:int
+    forms:Optional[List[SessionForm]] = None
+    deployed: bool
+    
+    class Config:
+        from_attributes = True
+        populate_by_name = True
+        arbitrary_types_allowed=True
+        json_encoders = {PyObjectId: str}
 
 class SessionShort(Session):
     participants: int
@@ -123,7 +124,8 @@ class SessionCreate(BaseModel):
                 "emails": ["bobpanda.bp@gmail.com"],
                 "form_count":1,
                 "template":"",
-                "forms":[]
+                "forms":[],
+                "deployed": False
             }
         }
 
