@@ -7,35 +7,37 @@ from app.core.objectID import PyObjectId
 def datetime_now():
     return datetime.now(timezone.utc)
 
-class Session(BaseModel):
-    id: PyObjectId = Field(alias="_id")
-    title: str
-    date_created: Optional[datetime] = None
-    date_updated: Optional[datetime] = None
-    destination: str
-    template: str
-    form_count:int
-
-    class Config:
-        from_attributes = True
-        populate_by_name = True
-        arbitrary_types_allowed=True
-        json_encoders = {PyObjectId: str}
-
 class FormCustomComponent(BaseModel):
     id: int
     custom: str
 
 class SessionForm(BaseModel):
-    form_id: int
+    form_id: str
     completed: bool
     score: Optional[int] = None 
     department: Optional[str] = None
     date_completed: Optional[datetime] = None
     custom: Optional[List[FormCustomComponent]] = None
 
+class Session(BaseModel):
+    id: PyObjectId = Field(alias="_id")
+    title: str
+    date_created: Optional[datetime] = None
+    date_updated: Optional[datetime] = None
+    emails: List[str]
+    template: str
+    form_count: Optional[int] = None
+    forms:Optional[List[SessionForm]] = None
+    deployed: bool
+    
+    class Config:
+        from_attributes = True
+        populate_by_name = True
+        arbitrary_types_allowed=True
+        json_encoders = {PyObjectId: str}
 
 class SessionShort(Session):
+    participants: int
     completed:int
     promoters:int
     passive:int
@@ -47,6 +49,11 @@ class SessionDatabase(Session):
     
 class SessionLong(Session):
     forms:List[SessionForm]
+
+    @computed_field(return_type=int)
+    @cached_property
+    def participants(self):
+        return len(self.emails)
 
     @computed_field(return_type=int)
     @cached_property
@@ -98,13 +105,14 @@ class SessionLong(Session):
 
 class SessionCreate(BaseModel):
     title: str
-    destination: str
+    emails: List[str]
     form_count: int
     template: str
     form_count:int
     date_created: datetime = Field(default_factory=datetime_now)
     date_updated: Optional[datetime] = None
     forms:Optional[List[SessionForm]] = None
+    deployed: bool
     
     class Config:
         from_attributes = True
@@ -113,20 +121,22 @@ class SessionCreate(BaseModel):
         json_schema_extra = {
             "example": {
                 "title": "Sample eNPS Survey",
-                "destination": "*@ys.com",
+                "emails": ["bobpanda.bp@gmail.com"],
                 "form_count":1,
                 "template":"",
-                "forms":[]
+                "forms":[],
+                "deployed": False
             }
         }
 
 class SessionUpdate(BaseModel):
 
     title: Optional[str] = None
-    destination: Optional[str] = None
+    emails: Optional[List[str]] = None
     template: Optional[str] = None
-    forms:List[SessionForm] = None
+    forms: List[SessionForm] = None
     date_updated: datetime = Field(default_factory=datetime_now)
+    deployed: Optional[bool] = None
 
     class Config:
         from_attributes = True
@@ -135,7 +145,7 @@ class SessionUpdate(BaseModel):
         json_schema_extra = {
             "example": {
                 "title": "Sample eNPS Survey",
-                "destination": "*@ys.com",
+                "emails": ["bobpanda.bp@gmail.com"],
                 "template":"",
                 "forms":[]
             }

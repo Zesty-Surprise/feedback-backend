@@ -14,6 +14,8 @@ from app.models.session import (
     SessionForm
 )
 from ....db.mongodb import AsyncIOMotorClient
+import random
+import string
 
 async def cont_get_sessions(db: AsyncIOMotorClient, dep: str = None, short: bool = None):
     
@@ -42,14 +44,15 @@ async def cont_get_sessions(db: AsyncIOMotorClient, dep: str = None, short: bool
 async def cont_create_session(session: SessionCreate, db: AsyncIOMotorClient):
     session = jsonable_encoder(session)
     session["forms"] = []
-    for i in range(0, session["form_count"]):
+    for email in session["emails"]:
         new_form : SessionForm = {
-            "form_id" : i,
+            "form_id" : ''.join(random.choices(string.ascii_lowercase, k=8)),
             "completed":False,
             "score":None,
             "department":None,
             "date_completed":None,
-            "custom":None
+            "custom":None,
+            "deployed":True
         }
         session["forms"].append(new_form)
     session = await db_create_session(session, db)
