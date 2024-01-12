@@ -4,7 +4,6 @@ from authlib.integrations.starlette_client import OAuth, OAuthError
 from fastapi import APIRouter, Depends, HTTPException, Request, status, Query
 from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
-
 from app.models.permissions import PermissionChecker
 from app.repository.user import db_get_all_users
 from ....core.config import  google_client_id, google_client_secret, secret_key

@@ -17,3 +17,7 @@ pydantic==2.5.2
 email-validator==2.1.0.post1
 blinker==1.7.0
 httpx==0.25.2
+coverage==7.3.2
+pytest==7.4.3
+pytest-cov==4.1.0
+pytest-asyncio==0.23.2

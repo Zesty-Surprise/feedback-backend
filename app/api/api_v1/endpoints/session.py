@@ -16,7 +16,8 @@ from ..controllers.session import (
 
 from app.models.session import (
     SessionCreate, 
-    SessionUpdate
+    SessionUpdate,
+    Session
 )
 
 router = APIRouter(tags=["Sessions"])
@@ -51,7 +52,7 @@ async def get_session(
         return session
     raise HTTPException(404, f"sessions {id} not found")
 
-@router.post("/sessions", response_model=SessionCreate)
+@router.post("/sessions", response_model=Session)
 async def add_session(
     session: SessionCreate,    
     authorized: bool = Depends(PermissionChecker(required_permissions=["sessions:write"])),
@@ -62,7 +63,7 @@ async def add_session(
         return session
     return HTTPException(404, f"session failed to create")
 
-@router.put("/sessions/{id}", response_model=SessionUpdate)
+@router.put("/sessions/{id}")
 async def update_session(
     id: str, 
     request: SessionUpdate, 
