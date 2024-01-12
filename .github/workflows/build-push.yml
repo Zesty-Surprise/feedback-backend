@@ -42,6 +42,11 @@ jobs:
         - name: Unit Tests
           run: |
             export MONGODB_URL=mongodb://localhost:27017
+            export MAIL_USERNAME=axel.zublena.2
+            export MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}
+            export MAIL_FROM=axel.zublena.2@gmail.com
+            export MAIL_PORT=465
+            export MAIL_SERVER=smtp.gmail.com
             pytest
         - name: SonarQube analysis
           uses: sonarsource/sonarqube-scan-action@master
